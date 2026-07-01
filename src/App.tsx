@@ -6,6 +6,7 @@ import Optimization from './pages/Optimization'
 import Budgets from './pages/Budgets'
 import Analytics from './pages/Analytics'
 import Projects from './pages/Projects'
+import NotFound from './pages/NotFound'
 import WelcomeModal from './components/WelcomeModal'
 
 function App() {
@@ -13,13 +14,14 @@ function App() {
     <>
       <WelcomeModal />
       <Routes>
-      <Route path="/" element={<Overview />} />
-      <Route path="/chat" element={<Chat />} />
-      <Route path="/spend-tracking" element={<SpendTracking />} />
-      <Route path="/optimization" element={<Optimization />} />
-      <Route path="/budgets" element={<Budgets />} />
-      <Route path="/projects" element={<Projects />} />
-      <Route path="/analytics" element={<Analytics />} />
+        <Route path="/" element={<Overview />} />
+        <Route path="/chat" element={<Chat />} />
+        <Route path="/spend-tracking" element={<SpendTracking />} />
+        <Route path="/optimization" element={<Optimization />} />
+        <Route path="/budgets" element={<Budgets />} />
+        <Route path="/projects" element={<Projects />} />
+        <Route path="/analytics" element={<Analytics />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   )

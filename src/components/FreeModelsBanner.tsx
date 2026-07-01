@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useApp } from '../lib/store'
+import { useApp } from '../lib/app-context'
 import { fmtMoney } from '../lib/models'
 import { freeModelSavings, paidSpendPct } from '../lib/selectors'
 

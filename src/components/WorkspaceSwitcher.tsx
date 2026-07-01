@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useApp } from '../lib/store'
+import { useApp } from '../lib/app-context'
 
 // Workspace switcher (top nav) + a manage-members/invite modal. Shows the active
 // workspace; lets users switch, create, join by code, and (owners) invite/remove.

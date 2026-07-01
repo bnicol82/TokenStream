@@ -31,11 +31,16 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Build with Vite directly (skips `tsc -b`, which currently fails on
-      # pre-existing type errors). `--base` matches the repo name so assets and
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      # Type-check then build. `--base` matches the repo name so assets and
       # client-side routes resolve under https://<user>.github.io/TokenStream/.
       - name: Build
-        run: npx vite build --base=/${{ github.event.repository.name }}/
+        run: npx tsc -b && npx vite build --base=/${{ github.event.repository.name }}/
 
       # SPA fallback so deep links / refreshes resolve to the app on Pages.
       - name: Add SPA 404 fallback

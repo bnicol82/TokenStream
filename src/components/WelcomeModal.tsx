@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useApp } from '../lib/store'
+import { useApp } from '../lib/app-context'
 
 const WELCOMED_KEY = 'tokenstream:welcomed'
 

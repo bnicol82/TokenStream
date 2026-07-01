@@ -1,6 +1,8 @@
 // Shared model catalog + pricing used across Chat cost estimation, Optimization
 // routing rules, and the performance matrix. Prices are per 1M tokens (USD).
 
+import type { CustomModel } from './types'
+
 export interface ModelInfo {
   name: string
   provider: string
@@ -61,10 +63,32 @@ export function routedModel(engineOn: boolean): ModelInfo {
   return engineOn ? bestFreeModel() : modelByName('GPT-4o')
 }
 
+// A catalog entry: a built-in model, or a user-registered custom model (which
+// carries its `id` so the UI can manage it).
+export type CatalogModel = ModelInfo & { id?: string }
+
+// Headline savings label vs the frontier baseline (GPT-4o) for a typical call
+// (1,800 input + 600 output tokens — same mix as the cost estimator).
+export function savingsLabel(priceIn: number, priceOut: number): string {
+  const cost = 1800 * priceIn + 600 * priceOut
+  if (cost <= 0) return 'Free'
+  const base = 1800 * 5 + 600 * 15
+  const pct = Math.round((1 - cost / base) * 100)
+  return pct >= 0 ? `-${pct}%` : `+${-pct}%`
+}
+
 // Built-in catalog plus a user's own registered models, used wherever the app
 // shows or routes between models (Optimization matrix/rules, manual logging).
-export function combinedModels(custom: ModelInfo[]): ModelInfo[] {
-  return [...MODELS, ...custom]
+// Custom models get a computed savings label and free flag from their pricing.
+export function combinedModels(custom: CustomModel[]): CatalogModel[] {
+  return [
+    ...MODELS,
+    ...custom.map((m) => ({
+      ...m,
+      sav: savingsLabel(m.priceIn, m.priceOut),
+      free: m.priceIn <= 0 && m.priceOut <= 0 ? true : undefined,
+    })),
+  ]
 }
 
 export interface CostEstimate {

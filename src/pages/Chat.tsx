@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import Shell from '../components/Shell'
-import { useApp } from '../lib/store'
+import { useApp } from '../lib/app-context'
 import {
   estimateCost,
   estimateForModel,

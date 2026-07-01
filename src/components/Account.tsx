@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useApp } from '../lib/store'
+import { useApp } from '../lib/app-context'
 
 export default function Account() {
   const { supabaseEnabled, session, syncing, signIn, signUp, signOut } = useApp()

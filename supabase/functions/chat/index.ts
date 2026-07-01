@@ -53,6 +53,12 @@ interface Msg {
   content: string
 }
 
+interface ChatOpts {
+  compress?: boolean
+  route?: boolean
+  cache?: boolean
+}
+
 // Model name (as shown in the app) → how to call it.
 type Kind = 'gemini' | 'openai' | 'anthropic'
 interface ModelCfg {
@@ -174,13 +180,13 @@ async function resolveKey(providerName: string, authHeader: string | null): Prom
 
 // ---- provider callers -----------------------------------------------------
 
-function callProvider(cfg: ModelCfg | null, key: string, messages: Msg[], opts: any): Promise<string> {
+function callProvider(cfg: ModelCfg | null, key: string, messages: Msg[], opts: ChatOpts): Promise<string> {
   if (!cfg || cfg.kind === 'anthropic') return callAnthropic(key, messages, opts)
   if (cfg.kind === 'gemini') return callGemini(key, cfg.apiModel, messages)
   return callOpenAICompat(cfg.endpoint!, key, cfg.apiModel, messages)
 }
 
-async function callAnthropic(key: string, messages: Msg[], opts: any): Promise<string> {
+async function callAnthropic(key: string, messages: Msg[], opts: ChatOpts): Promise<string> {
   const apiModel = opts?.route === false ? FRONTIER_MODEL : ROUTED_ANTHROPIC
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',

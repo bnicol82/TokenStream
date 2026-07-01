@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { useApp } from '../lib/store'
+import { useApp } from '../lib/app-context'
 import type { ProviderConnection } from '../lib/types'
 
 // Providers we expose for connection. The two with a real usage API are flagged
 // so the UI can hint that the others are sandbox-only for now.
-export const PROVIDER_META = [
+const PROVIDER_META = [
   { name: 'OpenAI', initial: 'O', color: '#10a37f', liveSync: true },
   { name: 'Anthropic', initial: 'A', color: '#d97757', liveSync: true },
   { name: 'Grok', initial: 'G', color: '#1d9bf0', liveSync: false },

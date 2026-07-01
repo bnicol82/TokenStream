@@ -24,6 +24,102 @@ function db() {
   return supabase
 }
 
+// ---- row shapes (snake_case columns as returned by Postgres) ---------------
+
+interface TxnRow {
+  id: string
+  ts: string
+  provider: string
+  model: string
+  tag: string
+  input_tokens: number
+  output_tokens: number
+  cost: number | string
+  base_cost: number | string
+  optimized: boolean
+  project_id: string | null
+  workspace_id: string | null
+}
+
+interface BudgetRow {
+  id: string
+  name: string
+  category: Budget['category']
+  budget_limit: number | string
+  spent: number | string
+  token_used: number | string
+  token_cap: number | string
+  project_id: string | null
+  workspace_id: string | null
+}
+
+interface ConvRow {
+  id: string
+  title: string
+  tag: string
+  tag_color: string
+  created_at: string
+  project_id: string | null
+  model_name: string | null
+  workspace_id: string | null
+}
+
+interface MsgRow {
+  id: string
+  conversation_id: string
+  role: ChatMessage['role']
+  text: string
+  model: string | null
+  opt: string | null
+  cost: number | string | null
+  usage: ChatMessage['usage'] | null
+  roi_tag: string | null
+}
+
+interface ModelRow {
+  id: string
+  name: string
+  provider: string
+  price_in: number | string
+  price_out: number | string
+  speed: number
+  cost: number
+  quality: number
+  api_model: string | null
+}
+
+interface ConnectionRow {
+  id: string
+  provider: string
+  status: ProviderConnection['status']
+  mode: ProviderConnection['mode']
+  key_hint: string | null
+  last_synced_at: string | null
+  last_error: string | null
+}
+
+interface ProjectRow {
+  id: string
+  name: string
+  color: string
+  keywords: string[] | null
+  budget: number | string
+  created_at: string
+  workspace_id: string | null
+}
+
+interface WorkspaceRow {
+  id: string
+  name: string
+  owner_id: string
+}
+
+interface MemberRow {
+  user_id: string
+  email: string | null
+  role: WorkspaceMember['role']
+}
+
 // ---- mappers --------------------------------------------------------------
 
 const txnToRow = (t: Transaction, userId: string) => ({
@@ -41,7 +137,7 @@ const txnToRow = (t: Transaction, userId: string) => ({
   project_id: t.projectId ?? null,
   workspace_id: t.workspaceId ?? null,
 })
-const rowToTxn = (r: any): Transaction => ({
+const rowToTxn = (r: TxnRow): Transaction => ({
   id: r.id,
   ts: new Date(r.ts).getTime(),
   provider: r.provider,
@@ -68,7 +164,7 @@ const budgetToRow = (b: Budget, userId: string) => ({
   project_id: b.projectId ?? null,
   workspace_id: b.workspaceId ?? null,
 })
-const rowToBudget = (r: any): Budget => ({
+const rowToBudget = (r: BudgetRow): Budget => ({
   id: r.id,
   name: r.name,
   category: r.category,
@@ -103,7 +199,7 @@ const msgToRow = (m: ChatMessage, conversationId: string, userId: string) => ({
   usage: m.usage ?? null,
   roi_tag: m.roiTag ?? null,
 })
-const rowToMsg = (r: any): ChatMessage => ({
+const rowToMsg = (r: MsgRow): ChatMessage => ({
   id: r.id,
   role: r.role,
   text: r.text,
@@ -126,7 +222,7 @@ const modelToRow = (m: CustomModel, userId: string) => ({
   quality: m.quality,
   api_model: m.apiModel ?? null,
 })
-const rowToModel = (r: any): CustomModel => ({
+const rowToModel = (r: ModelRow): CustomModel => ({
   id: r.id,
   name: r.name,
   provider: r.provider,
@@ -138,7 +234,7 @@ const rowToModel = (r: any): CustomModel => ({
   apiModel: r.api_model ?? undefined,
 })
 
-const rowToConnection = (r: any): ProviderConnection => ({
+const rowToConnection = (r: ConnectionRow): ProviderConnection => ({
   id: r.id,
   provider: r.provider,
   status: r.status,
@@ -158,7 +254,7 @@ const projectToRow = (p: Project, userId: string) => ({
   created_at: new Date(p.createdAt).toISOString(),
   workspace_id: p.workspaceId ?? null,
 })
-const rowToProject = (r: any): Project => ({
+const rowToProject = (r: ProjectRow): Project => ({
   id: r.id,
   name: r.name,
   color: r.color,
@@ -192,7 +288,7 @@ export async function loadAll(userId: string, workspaceId: string): Promise<AppD
   // Never initialized (no settings rows yet) → caller should seed defaults.
   if (!opt.data && !alerts.data) return null
 
-  const conversations: Conversation[] = (convs.data ?? []).map((cv: any) => ({
+  const conversations: Conversation[] = ((convs.data ?? []) as ConvRow[]).map((cv) => ({
     id: cv.id,
     title: cv.title,
     tag: cv.tag,
@@ -200,7 +296,7 @@ export async function loadAll(userId: string, workspaceId: string): Promise<AppD
     createdAt: new Date(cv.created_at).getTime(),
     projectId: cv.project_id ?? null,
     modelName: cv.model_name ?? null,
-    messages: (msgs.data ?? []).filter((m: any) => m.conversation_id === cv.id).map(rowToMsg),
+    messages: ((msgs.data ?? []) as MsgRow[]).filter((m) => m.conversation_id === cv.id).map(rowToMsg),
   }))
 
   const defaults = emptyData()
@@ -267,7 +363,7 @@ export async function seedAccount(userId: string, workspaceId: string): Promise<
 
 // ---- workspaces -----------------------------------------------------------
 
-const rowToWorkspace = (r: any, role: 'owner' | 'member'): Workspace => ({
+const rowToWorkspace = (r: WorkspaceRow, role: 'owner' | 'member'): Workspace => ({
   id: r.id,
   name: r.name,
   ownerId: r.owner_id,
@@ -282,9 +378,8 @@ export async function loadWorkspaces(userId: string): Promise<Workspace[]> {
     .select('role, workspaces ( id, name, owner_id )')
     .eq('user_id', userId)
   if (error) throw error
-  return (data ?? [])
-    .filter((m: any) => m.workspaces)
-    .map((m: any) => rowToWorkspace(m.workspaces, m.role))
+  const rows = (data ?? []) as unknown as { role: Workspace['role']; workspaces: WorkspaceRow | null }[]
+  return rows.filter((m) => m.workspaces).map((m) => rowToWorkspace(m.workspaces!, m.role))
 }
 
 export async function loadMembers(workspaceId: string): Promise<WorkspaceMember[]> {
@@ -293,7 +388,7 @@ export async function loadMembers(workspaceId: string): Promise<WorkspaceMember[
     .select('user_id, email, role')
     .eq('workspace_id', workspaceId)
   if (error) throw error
-  return (data ?? []).map((m: any) => ({ userId: m.user_id, email: m.email ?? '—', role: m.role }))
+  return ((data ?? []) as MemberRow[]).map((m) => ({ userId: m.user_id, email: m.email ?? '—', role: m.role }))
 }
 
 // Ensure the user has at least a Personal workspace; backfill legacy rows.

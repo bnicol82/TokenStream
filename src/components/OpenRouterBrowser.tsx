@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useApp } from '../lib/store'
+import { useApp } from '../lib/app-context'
 import { fmtMoney } from '../lib/models'
 import { fetchOpenRouterModels, costRating, type OpenRouterModel } from '../lib/openrouter'
 
@@ -8,17 +8,21 @@ import { fetchOpenRouterModels, costRating, type OpenRouterModel } from '../lib/
 // and become usable in the chat model picker, routed through OpenRouter.
 export default function OpenRouterBrowser({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { data, addCustomModel } = useApp()
-  const [models, setModels] = useState<OpenRouterModel[]>([])
-  const [loading, setLoading] = useState(false)
+  // null = not fetched yet; the catalog is cached by fetchOpenRouterModels.
+  const [models, setModels] = useState<OpenRouterModel[] | null>(null)
   const [q, setQ] = useState('')
+  const loading = models === null
 
   useEffect(() => {
-    if (!open) return
-    setLoading(true)
-    fetchOpenRouterModels()
-      .then(setModels)
-      .finally(() => setLoading(false))
-  }, [open])
+    if (!open || models !== null) return
+    let live = true
+    fetchOpenRouterModels().then((list) => {
+      if (live) setModels(list)
+    })
+    return () => {
+      live = false
+    }
+  }, [open, models])
 
   const added = useMemo(
     () => new Set(data.customModels.filter((m) => m.provider === 'OpenRouter').map((m) => m.apiModel)),
@@ -26,8 +30,9 @@ export default function OpenRouterBrowser({ open, onClose }: { open: boolean; on
   )
 
   const filtered = useMemo(() => {
+    const all = models ?? []
     const s = q.trim().toLowerCase()
-    const list = s ? models.filter((m) => m.name.toLowerCase().includes(s) || m.id.toLowerCase().includes(s)) : models
+    const list = s ? all.filter((m) => m.name.toLowerCase().includes(s) || m.id.toLowerCase().includes(s)) : all
     return list.slice(0, 200)
   }, [models, q])
 
@@ -106,7 +111,7 @@ export default function OpenRouterBrowser({ open, onClose }: { open: boolean; on
         </div>
 
         <div className="text-textDim text-[11.5px] font-medium mt-3">
-          {models.length > 0 && `${models.length} models available`}
+          {models && models.length > 0 && `${models.length} models available`}
         </div>
       </div>
     </div>

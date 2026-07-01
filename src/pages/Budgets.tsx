@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Shell from '../components/Shell'
-import { useApp } from '../lib/store'
+import { useApp } from '../lib/app-context'
 import type { Budget } from '../lib/types'
 import { fmtTokens, budgetUsage } from '../lib/selectors'
 import { fmtMoney } from '../lib/models'

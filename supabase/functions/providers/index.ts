@@ -20,7 +20,7 @@
 // @ts-expect-error - Deno std import resolved at deploy time
 import { serve } from 'https://deno.land/std@0.224.0/http/server.ts'
 // @ts-expect-error - esm import resolved at deploy time
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!
@@ -54,6 +54,29 @@ const CATALOG: Record<string, { model: string; priceIn: number; priceOut: number
 }
 const TAGS = ['Tax', 'Research', 'Code', 'Triage', 'General', 'Writing']
 
+interface RequestBody {
+  action?: string
+  provider?: string
+  mode?: string
+  apiKey?: string
+}
+
+// A `transactions` row produced by a sync (snake_case Postgres columns).
+interface UsageRow {
+  user_id: string
+  ts: string
+  provider: string
+  model: string
+  tag: string
+  input_tokens: number
+  output_tokens: number
+  cost: number
+  base_cost: number
+  optimized: boolean
+  source: string
+  external_id: string
+}
+
 // Providers with a real usage API we know how to call. Others can still connect
 // (and use sandbox), but a live sync tells the user to log manually.
 const LIVE_SYNC_SUPPORTED = new Set(['OpenAI', 'Anthropic'])
@@ -76,9 +99,9 @@ serve(async (req: Request) => {
     // Service-role client bypasses RLS for secrets/transactions writes.
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY)
 
-    const body = await req.json()
-    const action = body?.action as string
-    const provider = body?.provider as string
+    const body = (await req.json()) as RequestBody
+    const action = body.action ?? ''
+    const provider = body.provider ?? ''
     if (!provider || !CATALOG[provider]) return json({ error: 'Unknown provider' }, 400)
 
     if (action === 'connect') return await connect(admin, userId, provider, body)
@@ -92,9 +115,9 @@ serve(async (req: Request) => {
 
 // ---- actions --------------------------------------------------------------
 
-async function connect(admin: any, userId: string, provider: string, body: any) {
-  const mode = body?.mode === 'sandbox' ? 'sandbox' : 'live'
-  const apiKey = (body?.apiKey ?? '').trim()
+async function connect(admin: SupabaseClient, userId: string, provider: string, body: RequestBody) {
+  const mode = body.mode === 'sandbox' ? 'sandbox' : 'live'
+  const apiKey = (body.apiKey ?? '').trim()
 
   if (mode === 'live') {
     if (!apiKey) return json({ error: 'API key required for live mode' }, 400)
@@ -125,7 +148,7 @@ async function connect(admin: any, userId: string, provider: string, body: any) 
   return json({ ok: true, connection: data }, 200)
 }
 
-async function sync(admin: any, userId: string, provider: string) {
+async function sync(admin: SupabaseClient, userId: string, provider: string) {
   const { data: conn } = await admin
     .from('provider_connections')
     .select('*')
@@ -134,7 +157,7 @@ async function sync(admin: any, userId: string, provider: string) {
     .maybeSingle()
   if (!conn) return json({ error: 'Provider not connected' }, 400)
 
-  let rows: any[] = []
+  let rows: UsageRow[] = []
   let note: string | null = null
   try {
     if (conn.mode === 'sandbox') {
@@ -173,7 +196,7 @@ async function sync(admin: any, userId: string, provider: string) {
   return json({ ok: true, inserted, note }, 200)
 }
 
-async function disconnect(admin: any, userId: string, provider: string) {
+async function disconnect(admin: SupabaseClient, userId: string, provider: string) {
   await admin.from('provider_secrets').delete().eq('user_id', userId).eq('provider', provider)
   await admin.from('provider_connections').delete().eq('user_id', userId).eq('provider', provider)
   return json({ ok: true }, 200)
@@ -205,10 +228,10 @@ async function validateKey(provider: string, key: string): Promise<{ ok: boolean
 // Best-effort real usage pulls. These hit organization-level usage APIs that
 // require ADMIN keys; shapes may need tweaking per org. Failures surface as the
 // connection's last_error rather than crashing the sync.
-async function fetchLiveUsage(provider: string, key: string, userId: string): Promise<any[]> {
+async function fetchLiveUsage(provider: string, key: string, userId: string): Promise<UsageRow[]> {
   const now = Math.floor(Date.now() / 1000)
   const start = now - 14 * 86400
-  const out: any[] = []
+  const out: UsageRow[] = []
 
   if (provider === 'OpenAI') {
     const url = `https://api.openai.com/v1/organization/usage/completions?start_time=${start}&bucket_width=1d&limit=14`
@@ -260,9 +283,9 @@ async function fetchLiveUsage(provider: string, key: string, userId: string): Pr
 // Deterministic-ish realistic usage for the last 14 days so the whole flow is
 // verifiable without a real key. external_id is stable per (provider, day, i)
 // so repeated syncs upsert rather than duplicate.
-function genSandboxUsage(userId: string, provider: string): any[] {
+function genSandboxUsage(userId: string, provider: string): UsageRow[] {
   const models = CATALOG[provider]
-  const rows: any[] = []
+  const rows: UsageRow[] = []
   let s = hashSeed(userId + provider)
   const rnd = () => {
     s = (s * 1103515245 + 12345) & 0x7fffffff
@@ -298,7 +321,7 @@ function usageRow(
   outTok: number,
   ts: number,
   externalId: string,
-) {
+): UsageRow {
   const price = CATALOG[provider].find((m) => m.model === model) ?? CATALOG[provider][0]
   const cost = (inTok * price.priceIn + outTok * price.priceOut) / 1e6
   const baseCost = (inTok * 5 + outTok * 15) / 1e6 // vs frontier GPT-4o
@@ -342,7 +365,7 @@ async function encrypt(plaintext: string): Promise<{ iv: string; ciphertext: str
   return { iv: b64(iv), ciphertext: b64(new Uint8Array(buf)) }
 }
 
-async function loadKey(admin: any, userId: string, provider: string): Promise<string> {
+async function loadKey(admin: SupabaseClient, userId: string, provider: string): Promise<string> {
   const { data, error } = await admin
     .from('provider_secrets')
     .select('iv, ciphertext')

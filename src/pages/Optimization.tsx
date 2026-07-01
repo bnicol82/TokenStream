@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import Shell from '../components/Shell'
 import { Toggle } from '../components/ui'
-import { useApp } from '../lib/store'
+import { useApp } from '../lib/app-context'
 import { MODELS, combinedModels, defaultFreeRouteIdx, bestFreeModel } from '../lib/models'
 import { totalSaved, savedPct as savedPctOf, freeModelSavings } from '../lib/selectors'
 import OpenRouterBrowser from '../components/OpenRouterBrowser'
@@ -330,7 +330,7 @@ export default function Optimization() {
               const isCustom = i >= MODELS.length
               return (
                 <div
-                  key={isCustom ? (m as any).id ?? m.name : m.name}
+                  key={isCustom ? (m.id ?? m.name) : m.name}
                   className="grid grid-cols-[1.4fr_1fr_1fr_1fr_auto] gap-2 items-center py-[13px] border-b border-[rgba(255,255,255,.04)]"
                 >
                   <span className="text-[#d6dbe6] text-sm font-semibold flex items-center flex-wrap gap-x-[6px]">
@@ -345,9 +345,9 @@ export default function Optimization() {
                   <Segs n={m.speed} color="#5b8dff" />
                   <Segs n={m.cost} color="#3ec98a" />
                   <Segs n={m.quality} color="#9b6bff" />
-                  {isCustom ? (
+                  {isCustom && m.id ? (
                     <button
-                      onClick={() => deleteCustomModel((m as any).id)}
+                      onClick={() => deleteCustomModel(m.id!)}
                       className="text-textMuted text-[12px] font-semibold cursor-pointer hover:text-[#f0915a]"
                     >
                       Remove
