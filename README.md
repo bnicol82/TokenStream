@@ -1,73 +1,56 @@
-# React + TypeScript + Vite
+# TokenStream
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+TokenStream is an AI token spend tracking dashboard. It routes chat tasks to the cheapest capable model, tracks per-call cost against a frontier-model baseline, and rolls everything up into budgets, projects, and analytics.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Overview** — monthly spend vs budget, realized savings, burn-rate projection, recent activity.
+- **Chat** — a working chat with per-message cost estimates, prompt compression, smart model routing, and per-conversation model pinning.
+- **Spend Tracking** — transaction log with filters, manual usage logging, and live provider sync (OpenAI/Anthropic usage APIs, sandbox mode for the rest).
+- **Optimization** — routing rules per task type, compression aggressiveness, a model performance matrix, and custom models (including the live OpenRouter catalog).
+- **Budgets & Projects** — spend caps with alert thresholds, project auto-assignment by prompt keywords.
+- **Analytics** — spend by provider/project/tag and an exportable report.
 
-## React Compiler
+## Getting started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Requires Node 22+.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev        # http://localhost:5173/
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+By default the app runs **entirely on `localStorage`** and seeds demo data on first load — no backend or API keys needed.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Scripts
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+| Command           | What it does                                  |
+| ----------------- | --------------------------------------------- |
+| `npm run dev`     | Start the dev server (no type-checking)       |
+| `npm run build`   | Type-check (`tsc -b`) and build for production|
+| `npm run preview` | Serve the production build locally            |
+| `npm run lint`    | ESLint over the whole repo                    |
+| `npm test`        | Run the unit test suite (Vitest)              |
+
+## Optional Supabase backend
+
+TokenStream can persist to Supabase (auth, multi-workspace teams, real AI chat replies via an Edge Function, and live provider usage sync):
+
+1. Copy `.env.example` to `.env` and fill in `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`.
+2. Follow [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) to create the schema (`supabase/schema.sql`) and deploy the `chat` and `providers` Edge Functions.
+
+Provider API keys are never exposed to the browser — the `providers` function validates them, encrypts them with AES-GCM, and stores only ciphertext.
+
+## Architecture
+
+- `src/lib/store.tsx` — central state provider: localStorage persistence, optional Supabase sync, all mutations.
+- `src/lib/app-context.ts` — the app context contract and `useApp` hook.
+- `src/lib/models.ts` — model catalog, pricing math, cost estimates.
+- `src/lib/repo.ts` — Supabase persistence layer (camelCase ↔ snake_case mapping).
+- `src/lib/selectors.ts` — spend/savings/budget aggregations.
+- `src/pages/*` — one file per dashboard page; `src/components/*` — shared UI.
+- `supabase/` — SQL schema and Deno Edge Functions.
+
+## Deployment
+
+Pushes to `main` lint, type-check, build, and deploy to GitHub Pages via `.github/workflows/deploy-pages.yml`. The SPA fallback (`404.html`) keeps deep links working.
