@@ -1,9 +1,10 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Shell from '../components/Shell'
 import { SegmentBar, Tag, CheckIcon } from '../components/ui'
 import FreeModelsBanner from '../components/FreeModelsBanner'
 import EmptyState from '../components/EmptyState'
-import { useApp } from '../lib/store'
+import { useApp } from '../lib/app-context'
 import { computeAlerts } from '../lib/alerts'
 import { fmtMoney } from '../lib/models'
 import { totalSpend, totalSaved, savedPct, totalTokens, fmtTokens } from '../lib/selectors'
@@ -13,6 +14,8 @@ const providerMax = 9
 export default function Overview() {
   const { data } = useApp()
   const navigate = useNavigate()
+  // Snapshot "now" once per mount so render stays pure (burn-rate math below).
+  const [now] = useState(() => Date.now())
   const { transactions, budgets } = data
   const topAlert = computeAlerts(data)[0]
   const isEmpty = transactions.length === 0 && budgets.length === 0
@@ -43,7 +46,7 @@ export default function Overview() {
     })
 
   // Days to budget at current daily burn
-  const daysSpan = Math.max(1, (Date.now() - Math.min(...transactions.map((t) => t.ts), Date.now())) / 86400000)
+  const daysSpan = Math.max(1, (now - Math.min(...transactions.map((t) => t.ts), now)) / 86400000)
   const dailyBurn = spend / daysSpan
   const daysToBudget = dailyBurn > 0 ? Math.max(0, Math.round((budgetCap - spend) / dailyBurn)) : 0
 

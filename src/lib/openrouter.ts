@@ -26,14 +26,22 @@ const FALLBACK: OpenRouterModel[] = [
 
 let cache: OpenRouterModel[] | null = null
 
+// Raw shape of an entry in OpenRouter's public /models response.
+interface OpenRouterApiModel {
+  id: string
+  name?: string
+  pricing?: { prompt?: string; completion?: string }
+  context_length?: number
+}
+
 export async function fetchOpenRouterModels(): Promise<OpenRouterModel[]> {
   if (cache) return cache
   try {
     const res = await fetch('https://openrouter.ai/api/v1/models')
     if (!res.ok) throw new Error(`OpenRouter /models ${res.status}`)
-    const json = await res.json()
+    const json = (await res.json()) as { data?: OpenRouterApiModel[] }
     const list: OpenRouterModel[] = (json?.data ?? [])
-      .map((m: any) => ({
+      .map((m) => ({
         id: m.id,
         name: m.name ?? m.id,
         priceIn: Number(m.pricing?.prompt ?? 0) * 1e6,

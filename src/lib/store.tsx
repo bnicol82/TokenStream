@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import type {
@@ -6,12 +6,12 @@ import type {
   Budget,
   ChatMessage,
   Conversation,
-  OptimizationSettings,
-  AlertSettings,
-  Transaction,
   CustomModel,
   Project,
+  Transaction,
 } from './types'
+import { AppCtx } from './app-context'
+import type { Ctx } from './app-context'
 import { seedData, newId } from './seed'
 import { classifyProject } from './projects'
 import { estimateForModel, routedModel, combinedModels, MODELS } from './models'
@@ -81,61 +81,6 @@ function persist(p: { then: (cb: (r: { error: unknown }) => void) => void } | Pr
     .catch((e) => console.error('[TokenStream] Supabase write error:', e))
 }
 
-interface Ctx {
-  data: AppData
-  // auth
-  session: Session | null
-  authReady: boolean
-  syncing: boolean
-  signIn: (email: string, password: string) => Promise<{ error: string | null }>
-  signUp: (email: string, password: string) => Promise<{ error: string | null; needsConfirm: boolean }>
-  signOut: () => Promise<void>
-  supabaseEnabled: boolean
-  // chat
-  newConversation: () => void
-  selectConversation: (id: string) => void
-  renameConversation: (id: string, title: string) => void
-  deleteConversation: (id: string) => void
-  sendMessage: (conversationId: string, text: string, opts: { compress: boolean; route: boolean; cache: boolean }) => void
-  setRoiTag: (conversationId: string, messageId: string, tag: string) => void
-  // budgets
-  addBudget: (b: Omit<Budget, 'id'>) => void
-  updateBudget: (id: string, patch: Partial<Budget>) => void
-  deleteBudget: (id: string) => void
-  // optimization
-  setOptimization: (patch: Partial<OptimizationSettings>) => void
-  cycleRoute: (ruleIndex: number) => void
-  // alerts
-  setAlerts: (patch: Partial<AlertSettings>) => void
-  // custom models
-  addCustomModel: (m: Omit<CustomModel, 'id'>) => void
-  deleteCustomModel: (id: string) => void
-  // projects
-  addProject: (p: Omit<Project, 'id' | 'createdAt'>) => Project
-  updateProject: (id: string, patch: Partial<Project>) => void
-  deleteProject: (id: string) => void
-  setActiveProject: (id: string | null) => void
-  setConversationProject: (conversationId: string, projectId: string | null) => void
-  setConversationModel: (conversationId: string, modelName: string | null) => void
-  // manual usage logging
-  logTransaction: (t: Omit<Transaction, 'id'>) => void
-  // live provider integrations (require cloud + deployed `providers` function)
-  connectProvider: (provider: string, opts: { apiKey?: string; mode: 'live' | 'sandbox' }) => Promise<{ error: string | null }>
-  syncProvider: (provider: string) => Promise<{ error: string | null; inserted: number; note: string | null }>
-  disconnectProvider: (provider: string) => Promise<{ error: string | null }>
-  // workspaces
-  switchWorkspace: (id: string) => Promise<void>
-  createWorkspace: (name: string) => Promise<{ error: string | null }>
-  joinWorkspace: (code: string) => Promise<{ error: string | null }>
-  createInviteCode: () => Promise<{ code: string | null; error: string | null }>
-  removeWorkspaceMember: (userId: string) => Promise<void>
-  leaveWorkspace: () => Promise<void>
-  // misc
-  resetAll: () => void
-}
-
-const AppCtx = createContext<Ctx | null>(null)
-
 export function AppProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<AppData>(loadLocal)
   const [session, setSession] = useState<Session | null>(null)
@@ -143,6 +88,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [syncing, setSyncing] = useState(false)
 
   const userId = session?.user.id ?? null
+  const userEmail = session?.user.email ?? ''
   const cloud = Boolean(userId)
 
   // Subscribe to auth state
@@ -152,7 +98,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setSession(data.session)
       setAuthReady(true)
     })
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s))
+    const { data: sub } = supabase.auth.onAuthStateChange((event, s) => {
+      setSession(s)
+      // signed out → revert to local demo data
+      if (event === 'SIGNED_OUT') setData(loadLocal())
+    })
     return () => sub.subscription.unsubscribe()
   }, [])
 
@@ -160,13 +110,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let cancelled = false
     if (cloud && userId) {
-      setSyncing(true)
       ;(async () => {
+        setSyncing(true)
         try {
-          const email = session?.user.email ?? ''
           // Ensure a personal workspace exists (+ backfill legacy rows), then
           // pick the active workspace (stored preference if still valid).
-          await repo.ensurePersonalWorkspace(userId, email)
+          await repo.ensurePersonalWorkspace(userId, userEmail)
           const workspaces = await repo.loadWorkspaces(userId)
           const stored = readActiveWorkspace()
           const activeWs = workspaces.find((w) => w.id === stored)?.id ?? workspaces[0]?.id
@@ -182,14 +131,11 @@ export function AppProvider({ children }: { children: ReactNode }) {
           if (!cancelled) setSyncing(false)
         }
       })()
-    } else if (isSupabaseConfigured) {
-      // signed out → revert to local demo data
-      setData(loadLocal())
     }
     return () => {
       cancelled = true
     }
-  }, [cloud, userId])
+  }, [cloud, userId, userEmail])
 
   // Persist to localStorage only when not signed in
   useEffect(() => {
@@ -642,12 +588,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [data, session, authReady, syncing, cloud, userId])
 
   return <AppCtx.Provider value={api}>{children}</AppCtx.Provider>
-}
-
-export function useApp(): Ctx {
-  const ctx = useContext(AppCtx)
-  if (!ctx) throw new Error('useApp must be used within AppProvider')
-  return ctx
 }
 
 // --- helpers ---------------------------------------------------------------

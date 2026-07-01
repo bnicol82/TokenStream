@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useApp } from '../lib/store'
+import { useApp } from '../lib/app-context'
 import { fmtMoney } from '../lib/models'
 import { computeAlerts, readSeenAlerts, markAlertsSeen } from '../lib/alerts'
 
