@@ -32,7 +32,7 @@ export default function Account() {
     return (
       <div className="ml-auto flex items-center gap-3">
         {syncing && <span className="text-textDim text-xs">Syncing…</span>}
-        <span className="text-textMuted text-[13px] font-medium max-w-[180px] truncate">{session.user.email}</span>
+        <span className="text-textMuted text-[13px] font-medium max-w-[180px] truncate max-md:hidden">{session.user.email}</span>
         <button
           onClick={() => signOut()}
           className="text-[#aab2c2] text-[13px] font-semibold px-3 py-[7px] rounded-[9px] border border-borderInput hover:text-white hover:border-white/20 transition-colors"

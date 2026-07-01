@@ -90,10 +90,10 @@ export default function Budgets() {
 
   return (
     <Shell>
-      <div className="px-[30px] py-[26px] pb-[30px]">
-        <div className="flex items-start justify-between mb-[22px]">
+      <div className="px-[30px] py-[26px] pb-[30px] max-md:px-4 max-md:py-5">
+        <div className="flex items-start justify-between mb-[22px] flex-wrap gap-3">
           <div>
-            <div className="text-white text-[28px] font-extrabold tracking-[-0.5px]">
+            <div className="text-white text-[28px] font-extrabold tracking-[-0.5px] max-md:text-[24px]">
               Budget Management
             </div>
             <div className="text-textMuted text-[15px] font-medium mt-[5px]">
@@ -186,7 +186,7 @@ export default function Budgets() {
           </div>
         )}
 
-        <div className="grid grid-cols-[1fr_1fr_1.15fr] gap-[18px] mb-[18px]">
+        <div className="grid grid-cols-[1fr_1fr_1.15fr] gap-[18px] mb-[18px] max-lg:grid-cols-1">
           {budgets.slice(0, 3).map((b) => {
             const cs = categoryStyle[b.category]
             const u = usageOf(b)
@@ -239,7 +239,7 @@ export default function Budgets() {
             )
           })}
 
-          <div className="col-start-3 row-start-1 row-span-2 bg-card border border-borderCard rounded-[14px] p-[20px_22px] flex flex-col">
+          <div className="col-start-3 row-start-1 row-span-2 bg-card border border-borderCard rounded-[14px] p-[20px_22px] flex flex-col max-lg:col-start-auto max-lg:row-start-auto max-lg:row-span-1">
             <div className="flex items-center justify-between mb-2">
               <span className="text-textSecondary text-[16.5px] font-bold">Budget History</span>
             </div>
@@ -279,7 +279,7 @@ export default function Budgets() {
             </svg>
           </div>
 
-          <div className="col-start-2 row-start-2 bg-card border border-borderCard rounded-[14px] p-[20px_22px]">
+          <div className="col-start-2 row-start-2 bg-card border border-borderCard rounded-[14px] p-[20px_22px] max-lg:col-start-auto max-lg:row-start-auto">
             <div className="flex items-center justify-between mb-[14px]">
               <span className="text-textSecondary text-[16.5px] font-bold">Forecasting</span>
               <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
@@ -303,7 +303,7 @@ export default function Budgets() {
         </div>
 
         {budgets.length > 3 && (
-          <div className="grid grid-cols-3 gap-[18px] mb-[18px]">
+          <div className="grid grid-cols-3 gap-[18px] mb-[18px] max-lg:grid-cols-1">
             {budgets.slice(3).map((b) => {
               const cs = categoryStyle[b.category]
               const pct = Math.round((b.spent / b.limit) * 100)
@@ -348,8 +348,8 @@ export default function Budgets() {
         )}
 
         <div className="bg-card border border-borderCard rounded-[14px] p-[22px_24px]">
-          <div className="flex items-start justify-between gap-8 flex-wrap">
-            <div className="flex-1 min-w-[340px]">
+          <div className="flex items-start justify-between gap-8 flex-wrap max-md:gap-6">
+            <div className="flex-1 min-w-[340px] max-md:min-w-0 max-md:w-full max-md:flex-none">
               <div className="text-textSecondary text-[16.5px] font-bold mb-1">Alert Threshold</div>
               <div className="text-textMuted text-[13.5px] font-medium mb-[22px]">
                 Notify me when usage reaches{' '}
@@ -390,9 +390,9 @@ export default function Budgets() {
               </div>
             </div>
 
-            <div className="w-px self-stretch bg-[rgba(255,255,255,.07)]" />
+            <div className="w-px self-stretch bg-[rgba(255,255,255,.07)] max-md:hidden" />
 
-            <div className="flex-1 min-w-[260px]">
+            <div className="flex-1 min-w-[260px] max-md:min-w-0 max-md:w-full max-md:flex-none">
               <div className="text-textSecondary text-[16.5px] font-bold mb-1">Alert Channels</div>
               <div className="text-textMuted text-[13.5px] font-medium mb-[22px]">
                 Where should we send budget alerts? In-App fires in the notification bell now; email &amp; Slack

@@ -82,7 +82,7 @@ export default function WorkspaceSwitcher() {
         <span className="w-[18px] h-[18px] rounded-[5px] bg-primary-gradient flex items-center justify-center text-white text-[10px] font-bold">
           {(active?.name ?? 'P').charAt(0).toUpperCase()}
         </span>
-        <span className="text-textTertiary text-[13.5px] font-semibold max-w-[120px] truncate">
+        <span className="text-textTertiary text-[13.5px] font-semibold max-w-[120px] truncate max-sm:hidden">
           {active?.name ?? 'Personal'}
         </span>
         <svg width="10" height="10" viewBox="0 0 11 11" fill="none">
@@ -93,7 +93,7 @@ export default function WorkspaceSwitcher() {
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => { setOpen(false); reset() }} />
-          <div className="absolute left-0 mt-2 w-[260px] z-50 bg-card border border-borderCard rounded-[12px] shadow-shell overflow-hidden">
+          <div className="absolute left-0 max-sm:left-auto max-sm:right-0 mt-2 w-[260px] z-50 bg-card border border-borderCard rounded-[12px] shadow-shell overflow-hidden">
             <div className="px-[14px] py-[10px] text-textMuted text-[11px] font-bold uppercase tracking-[0.5px] border-b border-borderSubtle">
               Workspaces
             </div>

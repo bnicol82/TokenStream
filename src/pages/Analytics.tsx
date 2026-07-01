@@ -125,9 +125,9 @@ export default function Analytics() {
 
   return (
     <Shell>
-      <div className="px-[30px] py-[26px] pb-[30px]">
-        <div className="flex items-center justify-between mb-[22px]">
-          <span className="text-white text-[28px] font-extrabold tracking-[-0.5px]">
+      <div className="px-[30px] py-[26px] pb-[30px] max-md:px-4 max-md:py-5">
+        <div className="flex items-center justify-between mb-[22px] flex-wrap gap-3">
+          <span className="text-white text-[28px] font-extrabold tracking-[-0.5px] max-md:text-[24px]">
             Token Analytics &amp; ROI Insights
           </span>
           <div className="flex items-center gap-[10px]">
@@ -151,21 +151,21 @@ export default function Analytics() {
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-4 mb-5">
+        <div className="grid grid-cols-4 gap-4 mb-5 max-lg:grid-cols-2">
           {kpis.map((k) => (
             <div key={k.label} className="bg-card border border-borderCard rounded-[14px] p-[18px_20px]">
               <div className="text-textMuted text-[13.5px] font-semibold mb-3">{k.label}</div>
-              <div className="text-white text-[32px] font-extrabold tracking-[-1px]">{k.value}</div>
+              <div className="text-white text-[32px] font-extrabold tracking-[-1px] max-md:text-[26px]">{k.value}</div>
             </div>
           ))}
         </div>
 
-        <div className="grid grid-cols-[1.55fr_1fr] gap-[18px] mb-5">
+        <div className="grid grid-cols-[1.55fr_1fr] gap-[18px] mb-5 max-lg:grid-cols-1">
           <div className="bg-card border border-borderCard rounded-[14px] p-[20px_22px]">
             <div className="text-textSecondary text-[16.5px] font-bold mb-4">
               Token Consumption by Task Category over Time
             </div>
-            <div className="flex gap-[18px]">
+            <div className="flex gap-[18px] max-md:flex-col">
               <svg width="100%" height="210" viewBox="0 0 520 210" fill="none" preserveAspectRatio="none" className="flex-1">
                 {areaGrid.map((g, i) => (
                   <g key={i}>
@@ -184,7 +184,7 @@ export default function Analytics() {
                   </text>
                 ))}
               </svg>
-              <div className="flex flex-col gap-[11px] justify-center">
+              <div className="flex flex-col gap-[11px] justify-center max-md:flex-row max-md:flex-wrap max-md:gap-4">
                 {areaLegend.map((l) => (
                   <div key={l.name} className="flex items-center gap-2">
                     <span className="w-[11px] h-[11px] rounded-[3px]" style={{ background: l.color }} />
@@ -199,7 +199,7 @@ export default function Analytics() {
             <div className="text-textSecondary text-[16.5px] font-bold mb-2">
               Savings Breakdown by Optimization Type
             </div>
-            <div className="flex items-center gap-5">
+            <div className="flex items-center gap-5 max-sm:flex-col">
               <svg width="150" height="150" viewBox="0 0 140 140" fill="none" className="flex-none">
                 <circle cx="70" cy="70" r="52" fill="none" stroke="#1d2532" strokeWidth="22" />
                 {donut.map((d, i) => (
@@ -238,11 +238,13 @@ export default function Analytics() {
           </div>
         </div>
 
-        <div className="grid grid-cols-[1.55fr_1fr] gap-[18px]">
+        <div className="grid grid-cols-[1.55fr_1fr] gap-[18px] max-lg:grid-cols-1">
           <div className="bg-card border border-borderCard rounded-[14px] p-[20px_22px]">
             <div className="text-textSecondary text-[16.5px] font-bold mb-[14px]">
               Highest ROI Activities
             </div>
+            <div className="max-md:overflow-x-auto">
+            <div className="max-md:min-w-[460px]">
             <div className="grid grid-cols-[1.4fr_1fr_1.2fr_.7fr] gap-2 pb-3 border-b border-[rgba(255,255,255,.07)]">
               <span className="text-textMuted text-[13.5px] font-semibold">Task Tag</span>
               <span className="text-textMuted text-[13.5px] font-semibold">Tokens Used</span>
@@ -264,6 +266,8 @@ export default function Analytics() {
                 </div>
               </div>
             ))}
+            </div>
+            </div>
           </div>
 
           <div className="bg-card border border-borderCard rounded-[14px] p-[20px_22px]">
@@ -294,7 +298,8 @@ export default function Analytics() {
           {projectRows.length === 0 ? (
             <div className="text-textMuted text-sm py-6 text-center">No usage yet.</div>
           ) : (
-            <>
+            <div className="max-md:overflow-x-auto">
+            <div className="max-md:min-w-[520px]">
               <div className="grid grid-cols-[1.6fr_1fr_1fr_1.4fr] gap-2 pb-3 border-b border-[rgba(255,255,255,.07)]">
                 <span className="text-textMuted text-[13.5px] font-semibold">Project</span>
                 <span className="text-textMuted text-[13.5px] font-semibold">Tokens</span>
@@ -320,7 +325,8 @@ export default function Analytics() {
                   </div>
                 </div>
               ))}
-            </>
+            </div>
+            </div>
           )}
         </div>
       </div>

@@ -77,10 +77,10 @@ export default function Optimization() {
 
   return (
     <Shell>
-      <div className="px-[30px] py-[26px] pb-[30px]">
-        <div className="flex items-start justify-between mb-[22px]">
+      <div className="px-[30px] py-[26px] pb-[30px] max-md:px-4 max-md:py-5">
+        <div className="flex items-start justify-between mb-[22px] flex-wrap gap-3">
           <div>
-            <div className="text-white text-[28px] font-extrabold tracking-[-0.5px]">
+            <div className="text-white text-[28px] font-extrabold tracking-[-0.5px] max-md:text-[24px]">
               Auto-Optimization Engine
             </div>
             <div className="text-textMuted text-[15px] font-medium mt-[5px]">
@@ -103,7 +103,7 @@ export default function Optimization() {
         </div>
 
         <div
-          className="flex items-center justify-between gap-4 rounded-[14px] border border-[rgba(43,182,115,.32)] p-[16px_20px] mb-[18px]"
+          className="flex items-center justify-between gap-4 rounded-[14px] border border-[rgba(43,182,115,.32)] p-[16px_20px] mb-[18px] max-md:flex-col max-md:items-start max-md:gap-3"
           style={{ background: 'linear-gradient(120deg,#10241c,#0e1620)' }}
         >
           <div className="flex items-center gap-[14px] min-w-0">
@@ -133,7 +133,7 @@ export default function Optimization() {
           )}
         </div>
 
-        <div className="grid grid-cols-[1fr_1fr_1.12fr] gap-[18px] items-start">
+        <div className="grid grid-cols-[1fr_1fr_1.12fr] gap-[18px] items-start max-lg:grid-cols-1">
           <div className="bg-card border border-borderCard rounded-[14px] p-[20px_22px]">
             <div className="text-textSecondary text-[16.5px] font-bold mb-[5px]">Routing Rules</div>
             <div className="text-textMuted text-[13px] font-medium mb-4">
@@ -319,6 +319,8 @@ export default function Optimization() {
               </div>
             )}
 
+            <div className="max-md:overflow-x-auto">
+            <div className="max-md:min-w-[440px]">
             <div className="grid grid-cols-[1.4fr_1fr_1fr_1fr_auto] gap-2 pb-3 border-b border-[rgba(255,255,255,.07)]">
               <span className="text-textMuted text-[13px] font-semibold">Model</span>
               <span className="text-textMuted text-[13px] font-semibold">Speed</span>
@@ -358,6 +360,8 @@ export default function Optimization() {
                 </div>
               )
             })}
+            </div>
+            </div>
             <div className="flex gap-4 mt-[14px]">
               <div className="flex items-center gap-[6px]">
                 <span className="w-[9px] h-[9px] rounded-[2px] bg-[#5b8dff]" />

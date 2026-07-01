@@ -52,10 +52,10 @@ export default function Overview() {
 
   return (
     <Shell>
-      <div className="px-[30px] py-[26px] pb-[30px]">
-        <div className="flex items-start justify-between mb-[22px]">
+      <div className="px-[30px] py-[26px] pb-[30px] max-md:px-4 max-md:py-5">
+        <div className="flex items-start justify-between mb-[22px] flex-wrap gap-3">
           <div>
-            <div className="text-white text-[28px] font-extrabold tracking-[-0.5px]">
+            <div className="text-white text-[28px] font-extrabold tracking-[-0.5px] max-md:text-[24px]">
               Overview
             </div>
             <div className="text-textMuted text-[15px] font-medium mt-[5px]">
@@ -73,7 +73,7 @@ export default function Overview() {
         {topAlert && (
           <div
             onClick={() => navigate(topAlert.kind === 'project' ? '/projects' : '/budgets')}
-            className="flex items-center justify-between gap-4 rounded-[14px] p-[16px_20px] mb-5 cursor-pointer"
+            className="flex items-center justify-between gap-4 rounded-[14px] p-[16px_20px] mb-5 cursor-pointer max-md:flex-col max-md:items-start max-md:gap-2"
             style={{
               background: topAlert.severity === 'over' ? 'linear-gradient(120deg,#2a1414,#1a0f12)' : 'linear-gradient(120deg,#2a2014,#1a140e)',
               border: `1px solid ${topAlert.severity === 'over' ? 'rgba(240,89,60,.4)' : 'rgba(240,168,120,.4)'}`,
@@ -118,19 +118,19 @@ export default function Overview() {
           />
         ) : (
         <>
-        <div className="grid grid-cols-[1.95fr_1fr] gap-5 mb-5">
-          <div className="bg-card border border-borderCard rounded-2xl p-[26px_30px]">
+        <div className="grid grid-cols-[1.95fr_1fr] gap-5 mb-5 max-lg:grid-cols-1">
+          <div className="bg-card border border-borderCard rounded-2xl p-[26px_30px] max-md:p-[20px_18px]">
             <div className="text-textTertiary text-xl font-semibold mb-[14px]">
               Current Monthly Spend
             </div>
             <div className="flex items-baseline justify-between flex-wrap gap-3">
               <div className="flex items-baseline gap-[14px]">
-                <span className="text-white text-[62px] font-extrabold tracking-[-2px] leading-none">
+                <span className="text-white text-[62px] font-extrabold tracking-[-2px] leading-none max-md:text-[42px]">
                   ${Math.round(spend).toLocaleString()}
                 </span>
-                <span className="text-textMuted text-xl font-medium">/ {usedTokens.toLocaleString()} tokens used</span>
+                <span className="text-textMuted text-xl font-medium max-md:text-base">/ {usedTokens.toLocaleString()} tokens used</span>
               </div>
-              <span className="text-textSecondary text-[34px] font-bold tracking-[-1px]">
+              <span className="text-textSecondary text-[34px] font-bold tracking-[-1px] max-md:text-[24px]">
                 ${budgetCap.toLocaleString()}
               </span>
             </div>
@@ -153,13 +153,13 @@ export default function Overview() {
               Applied This Month
             </div>
             <div className="mt-5">
-              <span className="text-white text-[38px] font-extrabold tracking-[-1px]">Saved {savedPctVal}%</span>
-              <span className="text-accentGreen text-[38px] font-extrabold tracking-[-1px]"> ({fmtMoney(saved)})</span>
+              <span className="text-white text-[38px] font-extrabold tracking-[-1px] max-md:text-[28px]">Saved {savedPctVal}%</span>
+              <span className="text-accentGreen text-[38px] font-extrabold tracking-[-1px] max-md:text-[28px]"> ({fmtMoney(saved)})</span>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-[1fr_2.55fr] gap-5 items-stretch">
+        <div className="grid grid-cols-[1fr_2.55fr] gap-5 items-stretch max-lg:grid-cols-1">
           <div className="flex flex-col gap-5">
             <div className="bg-card border border-borderCard rounded-2xl p-[22px_24px]">
               <div className="text-[#c9cfdb] text-[18px] font-semibold leading-[1.35] mb-[14px]">
@@ -206,14 +206,16 @@ export default function Overview() {
             </div>
           </div>
 
-          <div className="bg-card border border-borderCard rounded-2xl p-[24px_28px]">
-            <div className="flex items-center justify-between mb-[6px]">
+          <div className="bg-card border border-borderCard rounded-2xl p-[24px_28px] max-md:p-[18px_16px]">
+            <div className="flex items-center justify-between mb-[6px] flex-wrap gap-2">
               <span className="text-white text-[22px] font-bold">Recent Activity</span>
               <div className="bg-navActive text-[#aab2c2] text-[14.5px] font-semibold px-[18px] py-[9px] rounded-[9px] border border-borderCard cursor-pointer">
                 Last 24 hours
               </div>
             </div>
 
+            <div className="max-md:overflow-x-auto">
+            <div className="max-md:min-w-[640px]">
             <div className="grid grid-cols-[1.3fr_1.2fr_1.1fr_.9fr_.9fr_.9fr] gap-2 py-[14px] pb-3 border-b border-[rgba(255,255,255,.07)]">
               <span className="text-textMuted text-[15px] font-semibold">Timestamp</span>
               <span className="text-textMuted text-[15px] font-semibold">Model</span>
@@ -244,8 +246,10 @@ export default function Overview() {
                 </div>
               </div>
             ))}
+            </div>
+            </div>
 
-            <div className="grid grid-cols-2 gap-6 mt-[22px] pt-[22px] border-t border-[rgba(255,255,255,.07)]">
+            <div className="grid grid-cols-2 gap-6 mt-[22px] pt-[22px] border-t border-[rgba(255,255,255,.07)] max-md:grid-cols-1">
               <div>
                 <div className="text-textSecondary text-[17px] font-bold mb-[6px]">ROI Attribution</div>
                 <div className="text-textMuted text-[15px] font-medium leading-[1.5]">

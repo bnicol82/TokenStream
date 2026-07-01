@@ -38,7 +38,7 @@ export default function FreeModelsBanner({
 
   return (
     <div
-      className="flex items-center justify-between gap-4 rounded-[14px] border border-[rgba(43,182,115,.32)] p-[16px_20px] mb-5"
+      className="flex items-center justify-between gap-4 rounded-[14px] border border-[rgba(43,182,115,.32)] p-[16px_20px] mb-5 max-md:flex-col max-md:items-start max-md:gap-3"
       style={{ background: 'linear-gradient(120deg,#10241c,#0e1620)' }}
     >
       <div className="flex items-center gap-[14px] min-w-0">

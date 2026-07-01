@@ -56,6 +56,8 @@ export default function SpendTracking() {
   const [logOpen, setLogOpen] = useState(false)
   const [logForm, setLogForm] = useState(emptyLogForm)
   const [providersOpen, setProvidersOpen] = useState(false)
+  // Filters sidebar is always visible on desktop; collapsible on small screens.
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   const projectName = useMemo(() => {
     const m = new Map(data.projects.map((p) => [p.id, p]))
@@ -175,8 +177,18 @@ export default function SpendTracking() {
 
   return (
     <Shell>
-      <div className="grid grid-cols-[212px_1fr]">
-        <div className="border-r border-borderSubtle p-[24px_18px]">
+      <div className="grid grid-cols-[212px_1fr] max-lg:grid-cols-1">
+        <div className="border-r border-borderSubtle p-[24px_18px] max-lg:border-r-0 max-lg:border-b max-lg:p-4">
+          <button
+            onClick={() => setFiltersOpen((o) => !o)}
+            className="hidden max-lg:flex w-full items-center justify-between text-textTertiary text-[14px] font-bold cursor-pointer"
+          >
+            Filters &amp; Providers
+            <svg width="12" height="12" viewBox="0 0 11 11" fill="none" style={{ transform: filtersOpen ? 'rotate(180deg)' : 'none' }}>
+              <path d="M2 4L5.5 7.5L9 4" stroke="#8b93a5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+          <div className={filtersOpen ? 'max-lg:mt-4' : 'max-lg:hidden'}>
           <div className="text-textMuted text-[13px] font-bold tracking-[0.6px] uppercase mb-3">Filters</div>
           <div className="bg-primary-gradient text-white text-[14.5px] font-semibold p-[10px_13px] rounded-[9px] mb-2 flex items-center gap-[9px]">
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
@@ -246,11 +258,12 @@ export default function SpendTracking() {
               </div>
             )
           })}
+          </div>
         </div>
 
-        <div className="p-[24px_28px] pb-[30px]">
-          <div className="flex items-center justify-between mb-5">
-            <span className="text-white text-[28px] font-extrabold tracking-[-0.5px]">Spend Tracking</span>
+        <div className="p-[24px_28px] pb-[30px] max-md:p-4 max-md:pb-6">
+          <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+            <span className="text-white text-[28px] font-extrabold tracking-[-0.5px] max-md:text-[24px]">Spend Tracking</span>
             <div className="flex items-center gap-[10px]">
               <div className="text-[#aab2c2] text-[14.5px] font-semibold px-4 py-[9px] rounded-[9px] border border-borderInput cursor-pointer">Compare</div>
               <button
@@ -265,8 +278,8 @@ export default function SpendTracking() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex gap-2 bg-card p-[5px] rounded-[11px] border border-borderSubtle">
+          <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+            <div className="flex gap-2 bg-card p-[5px] rounded-[11px] border border-borderSubtle max-md:w-full max-md:justify-between max-md:gap-1">
               {['Last 7 days', 'Last 30 days', 'Custom'].map((r) => (
                 <div
                   key={r}
@@ -304,7 +317,7 @@ export default function SpendTracking() {
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-[18px] mb-5">
+          <div className="grid grid-cols-2 gap-[18px] mb-5 max-lg:grid-cols-1">
             <div className="bg-card border border-borderCard rounded-[14px] p-[20px_22px]">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-textSecondary text-[16.5px] font-bold">Daily Token Spend Trend</span>
@@ -361,13 +374,13 @@ export default function SpendTracking() {
             </div>
           </div>
 
-          <div className="bg-card border border-borderCard rounded-[14px] p-[20px_22px]">
-            <div className="flex items-center justify-between mb-4">
+          <div className="bg-card border border-borderCard rounded-[14px] p-[20px_22px] max-md:p-[14px_12px]">
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
               <div className="flex items-center gap-[9px] bg-navActive text-textTertiary text-sm font-semibold px-[15px] py-[9px] rounded-[9px]">
                 Show: {filtered.length} of {data.transactions.length}
               </div>
-              <div className="flex items-center gap-[10px]">
-                <div className="flex items-center gap-[9px] bg-input border border-borderInput px-[14px] py-[9px] rounded-[9px] w-[230px]">
+              <div className="flex items-center gap-[10px] max-md:w-full">
+                <div className="flex items-center gap-[9px] bg-input border border-borderInput px-[14px] py-[9px] rounded-[9px] w-[230px] max-md:flex-1 max-md:w-auto">
                   <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
                     <circle cx="6.5" cy="6.5" r="5" stroke="#6c7488" strokeWidth="1.5" />
                     <path d="M10 10L13.5 13.5" stroke="#6c7488" strokeWidth="1.5" strokeLinecap="round" />
@@ -388,6 +401,8 @@ export default function SpendTracking() {
               </div>
             </div>
 
+            <div className="max-lg:overflow-x-auto">
+            <div className="max-lg:min-w-[900px]">
             <div className={`${txGrid} pb-3 px-[6px] border-b border-[rgba(255,255,255,.07)]`}>
               {['Date', 'Provider', 'Model', 'Task Tag', 'Project', 'Input', 'Output', 'Cost', 'Optimized', 'Savings'].map((h) => (
                 <span key={h} className="text-textMuted text-[13.5px] font-semibold">{h}</span>
@@ -433,6 +448,8 @@ export default function SpendTracking() {
                 </div>
               )
             })}
+            </div>
+            </div>
           </div>
         </div>
       </div>
