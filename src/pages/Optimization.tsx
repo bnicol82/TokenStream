@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Shell from '../components/Shell'
-import { Toggle } from '../components/ui'
+import { Toggle, ScrollTable } from '../components/ui'
 import { useApp } from '../lib/app-context'
 import { MODELS, combinedModels, defaultFreeRouteIdx, bestFreeModel } from '../lib/models'
 import { totalSaved, savedPct as savedPctOf, freeModelSavings } from '../lib/selectors'
@@ -77,10 +77,10 @@ export default function Optimization() {
 
   return (
     <Shell>
-      <div className="px-[30px] py-[26px] pb-[30px]">
-        <div className="flex items-start justify-between mb-[22px]">
+      <div className="px-4 md:px-[30px] py-5 md:py-[26px] pb-6 md:pb-[30px]">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-5 md:mb-[22px]">
           <div>
-            <div className="text-white text-[28px] font-extrabold tracking-[-0.5px]">
+            <div className="text-white text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]">
               Auto-Optimization Engine
             </div>
             <div className="text-textMuted text-[15px] font-medium mt-[5px]">
@@ -103,7 +103,7 @@ export default function Optimization() {
         </div>
 
         <div
-          className="flex items-center justify-between gap-4 rounded-[14px] border border-[rgba(43,182,115,.32)] p-[16px_20px] mb-[18px]"
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-[14px] border border-[rgba(43,182,115,.32)] p-4 md:p-[16px_20px] mb-[18px]"
           style={{ background: 'linear-gradient(120deg,#10241c,#0e1620)' }}
         >
           <div className="flex items-center gap-[14px] min-w-0">
@@ -133,7 +133,7 @@ export default function Optimization() {
           )}
         </div>
 
-        <div className="grid grid-cols-[1fr_1fr_1.12fr] gap-[18px] items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_1.12fr] gap-[18px] items-start">
           <div className="bg-card border border-borderCard rounded-[14px] p-[20px_22px]">
             <div className="text-textSecondary text-[16.5px] font-bold mb-[5px]">Routing Rules</div>
             <div className="text-textMuted text-[13px] font-medium mb-4">
@@ -193,7 +193,7 @@ export default function Optimization() {
                   {Math.max(savPct, realizedPct)}%
                 </span>
               </div>
-              <div className="text-white text-[46px] font-extrabold tracking-[-1.5px] leading-[1.1]">
+              <div className="text-white text-[36px] md:text-[46px] font-extrabold tracking-[-1.5px] leading-[1.1]">
                 {savDollars}
               </div>
               <div className="text-textMuted text-[13.5px] font-medium mt-[6px]">
@@ -245,11 +245,11 @@ export default function Optimization() {
           </div>
 
           <div className="bg-card border border-borderCard rounded-[14px] p-[20px_22px]">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
               <div className="text-textSecondary text-[16.5px] font-bold">
                 Model Performance Matrix
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 flex-wrap">
                 <button
                   onClick={() => setBrowseOpen(true)}
                   className="text-[#7aa5ff] text-[13px] font-semibold cursor-pointer"
@@ -319,6 +319,7 @@ export default function Optimization() {
               </div>
             )}
 
+            <ScrollTable minWidth={520}>
             <div className="grid grid-cols-[1.4fr_1fr_1fr_1fr_auto] gap-2 pb-3 border-b border-[rgba(255,255,255,.07)]">
               <span className="text-textMuted text-[13px] font-semibold">Model</span>
               <span className="text-textMuted text-[13px] font-semibold">Speed</span>
@@ -358,7 +359,8 @@ export default function Optimization() {
                 </div>
               )
             })}
-            <div className="flex gap-4 mt-[14px]">
+            </ScrollTable>
+            <div className="flex gap-4 mt-[14px] flex-wrap">
               <div className="flex items-center gap-[6px]">
                 <span className="w-[9px] h-[9px] rounded-[2px] bg-[#5b8dff]" />
                 <span className="text-textMuted text-xs">Speed</span>

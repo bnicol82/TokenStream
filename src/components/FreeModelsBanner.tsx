@@ -38,10 +38,10 @@ export default function FreeModelsBanner({
 
   return (
     <div
-      className="flex items-center justify-between gap-4 rounded-[14px] border border-[rgba(43,182,115,.32)] p-[16px_20px] mb-5"
+      className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-[14px] border border-[rgba(43,182,115,.32)] p-4 md:p-[16px_20px] mb-5"
       style={{ background: 'linear-gradient(120deg,#10241c,#0e1620)' }}
     >
-      <div className="flex items-center gap-[14px] min-w-0">
+      <div className="flex items-start sm:items-center gap-[14px] min-w-0">
         <span className="flex-none w-[34px] h-[34px] rounded-[9px] bg-[rgba(43,182,115,.16)] flex items-center justify-center text-[18px]">
           💚
         </span>
@@ -54,7 +54,7 @@ export default function FreeModelsBanner({
           </div>
         </div>
       </div>
-      <div className="flex items-center gap-2 flex-none">
+      <div className="flex items-center gap-2 flex-none sm:flex-shrink-0">
         <button
           onClick={onAction}
           className="bg-[#2bb673] text-white text-[13px] font-bold px-[14px] py-[9px] rounded-[9px] cursor-pointer hover:brightness-110"

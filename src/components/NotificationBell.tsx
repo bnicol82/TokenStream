@@ -54,7 +54,7 @@ export default function NotificationBell() {
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 mt-2 w-[320px] z-50 bg-card border border-borderCard rounded-[12px] shadow-shell overflow-hidden">
+          <div className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 top-[60px] sm:top-auto sm:mt-2 w-auto sm:w-[320px] z-50 bg-card border border-borderCard rounded-[12px] shadow-shell overflow-hidden">
             <div className="px-[16px] py-[12px] border-b border-borderSubtle text-white text-[14px] font-bold">
               Alerts
             </div>

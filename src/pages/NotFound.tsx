@@ -6,7 +6,7 @@ export default function NotFound() {
   const navigate = useNavigate()
   return (
     <Shell>
-      <div className="px-[30px] py-[60px]">
+      <div className="px-4 md:px-[30px] py-10 md:py-[60px]">
         <EmptyState
           emoji="🧭"
           title="Page not found"

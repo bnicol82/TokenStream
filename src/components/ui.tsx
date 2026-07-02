@@ -144,6 +144,23 @@ export function GhostButton({
   )
 }
 
+/** Wraps wide data tables so they scroll horizontally on small screens. */
+export function ScrollTable({
+  children,
+  minWidth = 640,
+  className = '',
+}: {
+  children: ReactNode
+  minWidth?: number
+  className?: string
+}) {
+  return (
+    <div className={`overflow-x-auto -mx-1 px-1 ${className}`}>
+      <div style={{ minWidth }}>{children}</div>
+    </div>
+  )
+}
+
 export function CheckIcon({ size = 14 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
