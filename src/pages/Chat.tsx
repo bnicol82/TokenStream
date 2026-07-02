@@ -47,20 +47,29 @@ export default function Chat() {
 
   const catalog = useMemo(() => combinedModels(customModels), [customModels])
 
-  // Keep the newest message in view — without this, sent messages land below
-  // the fold and look like they were never added (especially on phones).
+  // Keep the newest exchange in view. Anchoring the latest user message at the
+  // top of the thread (rather than pinning to the absolute bottom) matters on
+  // phones: replies end in a tall Usage & Savings card, so a bottom pin would
+  // show only that card while the message and reply text sit above the fold.
   const messagesRef = useRef<HTMLDivElement>(null)
   const messageCount = active?.messages.length ?? 0
   const lastMessageText = active?.messages[active.messages.length - 1]?.text ?? ''
   useEffect(() => {
     const el = messagesRef.current
     if (!el) return
-    el.scrollTop = el.scrollHeight
-    // Re-pin on the next frame in case the just-committed content (usage
-    // cards, wrapped text) settles to a different height after first layout.
-    const raf = requestAnimationFrame(() => {
-      el.scrollTop = el.scrollHeight
-    })
+    const scroll = () => {
+      const userBubbles = el.querySelectorAll<HTMLElement>('[data-mrole="user"]')
+      const lastUser = userBubbles[userBubbles.length - 1]
+      if (lastUser) {
+        const top = lastUser.getBoundingClientRect().top - el.getBoundingClientRect().top + el.scrollTop
+        el.scrollTop = Math.min(top - 10, el.scrollHeight - el.clientHeight)
+      } else {
+        el.scrollTop = el.scrollHeight
+      }
+    }
+    scroll()
+    // Re-anchor on the next frame once usage cards / wrapped text settle.
+    const raf = requestAnimationFrame(scroll)
     return () => cancelAnimationFrame(raf)
   }, [messageCount, lastMessageText, activeConversationId])
   // The model the active conversation is pinned to (null/undefined = Auto).
@@ -358,7 +367,7 @@ export default function Chat() {
             )}
             {active?.messages.map((m) =>
               m.role === 'user' ? (
-                <div key={m.id} className="flex flex-col items-end">
+                <div key={m.id} data-mrole="user" className="flex flex-col items-end">
                   <div
                     className="max-w-[78%] max-md:max-w-[92%] text-white text-[14.5px] font-medium leading-[1.55] p-[14px_17px] rounded-[14px_14px_4px_14px]"
                     style={{ background: 'linear-gradient(90deg,#174dcc,#3770f0)' }}
