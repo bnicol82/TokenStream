@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Shell from '../components/Shell'
+import { ScrollTable } from '../components/ui'
 import ProvidersModal from '../components/ProvidersModal'
 import EmptyState from '../components/EmptyState'
 import { useApp } from '../lib/app-context'
@@ -56,6 +57,7 @@ export default function SpendTracking() {
   const [logOpen, setLogOpen] = useState(false)
   const [logForm, setLogForm] = useState(emptyLogForm)
   const [providersOpen, setProvidersOpen] = useState(false)
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   const projectName = useMemo(() => {
     const m = new Map(data.projects.map((p) => [p.id, p]))
@@ -175,8 +177,24 @@ export default function SpendTracking() {
 
   return (
     <Shell>
-      <div className="grid grid-cols-[212px_1fr]">
-        <div className="border-r border-borderSubtle p-[24px_18px]">
+      <div className="grid grid-cols-1 lg:grid-cols-[212px_1fr]">
+        {filtersOpen && (
+          <div
+            className="lg:hidden fixed inset-0 z-40 bg-black/50"
+            onClick={() => setFiltersOpen(false)}
+            aria-hidden
+          />
+        )}
+        <div
+          className={`
+            border-b lg:border-b-0 lg:border-r border-borderSubtle p-4 md:p-[24px_18px]
+            lg:relative lg:block
+            fixed lg:static inset-y-0 left-0 z-50 lg:z-auto w-[min(300px,88vw)] bg-app overflow-y-auto
+            transition-transform duration-200
+            ${filtersOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+            ${filtersOpen ? 'block' : 'hidden lg:block'}
+          `}
+        >
           <div className="text-textMuted text-[13px] font-bold tracking-[0.6px] uppercase mb-3">Filters</div>
           <div className="bg-primary-gradient text-white text-[14.5px] font-semibold p-[10px_13px] rounded-[9px] mb-2 flex items-center gap-[9px]">
             <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
@@ -248,10 +266,22 @@ export default function SpendTracking() {
           })}
         </div>
 
-        <div className="p-[24px_28px] pb-[30px]">
-          <div className="flex items-center justify-between mb-5">
-            <span className="text-white text-[28px] font-extrabold tracking-[-0.5px]">Spend Tracking</span>
-            <div className="flex items-center gap-[10px]">
+        <div className="p-4 md:p-[24px_28px] pb-6 md:pb-[30px] min-w-0">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-5">
+            <div className="flex items-center gap-3 min-w-0">
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(true)}
+                className="lg:hidden flex-none flex items-center justify-center w-10 h-10 rounded-[9px] border border-borderInput text-[#aab2c2]"
+                aria-label="Open filters"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M2 4h12M4 8h8M6 12h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              </button>
+              <span className="text-white text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]">Spend Tracking</span>
+            </div>
+            <div className="flex items-center gap-[10px] flex-wrap">
               <div className="text-[#aab2c2] text-[14.5px] font-semibold px-4 py-[9px] rounded-[9px] border border-borderInput cursor-pointer">Compare</div>
               <button
                 onClick={() => {
@@ -265,8 +295,8 @@ export default function SpendTracking() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex gap-2 bg-card p-[5px] rounded-[11px] border border-borderSubtle">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-5">
+            <div className="flex gap-2 bg-card p-[5px] rounded-[11px] border border-borderSubtle overflow-x-auto">
               {['Last 7 days', 'Last 30 days', 'Custom'].map((r) => (
                 <div
                   key={r}
@@ -304,7 +334,7 @@ export default function SpendTracking() {
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-[18px] mb-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-[18px] mb-5">
             <div className="bg-card border border-borderCard rounded-[14px] p-[20px_22px]">
               <div className="flex items-center justify-between mb-4">
                 <span className="text-textSecondary text-[16.5px] font-bold">Daily Token Spend Trend</span>
@@ -361,13 +391,13 @@ export default function SpendTracking() {
             </div>
           </div>
 
-          <div className="bg-card border border-borderCard rounded-[14px] p-[20px_22px]">
-            <div className="flex items-center justify-between mb-4">
+          <div className="bg-card border border-borderCard rounded-[14px] p-4 md:p-[20px_22px]">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-4">
               <div className="flex items-center gap-[9px] bg-navActive text-textTertiary text-sm font-semibold px-[15px] py-[9px] rounded-[9px]">
                 Show: {filtered.length} of {data.transactions.length}
               </div>
-              <div className="flex items-center gap-[10px]">
-                <div className="flex items-center gap-[9px] bg-input border border-borderInput px-[14px] py-[9px] rounded-[9px] w-[230px]">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-[10px]">
+                <div className="flex items-center gap-[9px] bg-input border border-borderInput px-[14px] py-[9px] rounded-[9px] w-full sm:w-[230px]">
                   <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
                     <circle cx="6.5" cy="6.5" r="5" stroke="#6c7488" strokeWidth="1.5" />
                     <path d="M10 10L13.5 13.5" stroke="#6c7488" strokeWidth="1.5" strokeLinecap="round" />
@@ -379,7 +409,7 @@ export default function SpendTracking() {
                     className="bg-transparent border-none outline-none text-textSecondary text-sm w-full placeholder:text-textDisabled"
                   />
                 </div>
-                <button onClick={exportCsv} className="flex items-center gap-2 bg-primary-gradient text-white text-sm font-semibold px-4 py-[9px] rounded-[9px] cursor-pointer">
+                <button onClick={exportCsv} className="flex items-center justify-center gap-2 bg-primary-gradient text-white text-sm font-semibold px-4 py-[9px] rounded-[9px] cursor-pointer">
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <path d="M7 1.5V9M7 9L4 6M7 9L10 6M2 11.5h10" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
@@ -388,6 +418,7 @@ export default function SpendTracking() {
               </div>
             </div>
 
+            <ScrollTable minWidth={980}>
             <div className={`${txGrid} pb-3 px-[6px] border-b border-[rgba(255,255,255,.07)]`}>
               {['Date', 'Provider', 'Model', 'Task Tag', 'Project', 'Input', 'Output', 'Cost', 'Optimized', 'Savings'].map((h) => (
                 <span key={h} className="text-textMuted text-[13.5px] font-semibold">{h}</span>
@@ -433,6 +464,7 @@ export default function SpendTracking() {
                 </div>
               )
             })}
+            </ScrollTable>
           </div>
         </div>
       </div>

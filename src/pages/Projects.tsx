@@ -39,10 +39,10 @@ export default function Projects() {
 
   return (
     <Shell>
-      <div className="px-[30px] py-[26px] pb-[30px]">
-        <div className="flex items-start justify-between mb-[22px]">
+      <div className="px-4 md:px-[30px] py-5 md:py-[26px] pb-6 md:pb-[30px]">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-5 md:mb-[22px]">
           <div>
-            <div className="text-white text-[28px] font-extrabold tracking-[-0.5px]">Projects</div>
+            <div className="text-white text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]">Projects</div>
             <div className="text-textMuted text-[15px] font-medium mt-[5px]">
               Track what each project costs in AI. New chats are auto-assigned by keywords, or to your active project.
             </div>
@@ -159,7 +159,7 @@ export default function Projects() {
           </div>
         )}
 
-        <div className="grid grid-cols-3 gap-[18px]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[18px]">
           {projects.map((p) => {
             const cost = projectSpent(transactions, p.id)
             const tokens = projectTokens(transactions, p.id)

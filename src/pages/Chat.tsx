@@ -35,7 +35,8 @@ export default function Chat() {
   const [compress, setCompress] = useState(true)
   const [route, setRoute] = useState(optimization.engineOn)
   const [cache, setCache] = useState(optimization.caching)
-  const [panelOpen, setPanelOpen] = useState(true)
+  const [panelOpen, setPanelOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [search, setSearch] = useState('')
   const [newProject, setNewProject] = useState('') // inline project name; '' = not creating
   const [creatingProject, setCreatingProject] = useState(false)
@@ -109,9 +110,28 @@ export default function Chat() {
 
   return (
     <Shell>
-      <div className="flex h-[640px]">
+      <div className="relative flex flex-col md:flex-row min-h-[calc(100dvh-56px)] md:min-h-0 md:h-[640px]">
+        {/* Sidebar backdrop (mobile) */}
+        {sidebarOpen && (
+          <div
+            className="md:hidden fixed inset-0 z-40 bg-black/50"
+            onClick={() => setSidebarOpen(false)}
+            aria-hidden
+          />
+        )}
+
         {/* Sidebar */}
-        <div className="flex-none w-[236px] border-r border-borderSubtle p-[20px_16px] flex flex-col min-h-0">
+        <div
+          className={`
+            flex-none md:w-[236px] border-b md:border-b-0 md:border-r border-borderSubtle
+            p-4 md:p-[20px_16px] flex flex-col min-h-0
+            md:relative md:translate-x-0
+            fixed md:static inset-y-0 left-0 z-50 md:z-auto w-[min(300px,88vw)] bg-app
+            transition-transform duration-200
+            ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+            ${sidebarOpen ? 'flex' : 'hidden md:flex'}
+          `}
+        >
           <button
             onClick={newConversation}
             className="flex items-center justify-center gap-[9px] bg-primary-gradient text-white text-[14.5px] font-semibold p-[11px] rounded-[10px] cursor-pointer mb-4"
@@ -145,7 +165,12 @@ export default function Chat() {
               return (
                 <div
                   key={c.id}
-                  onClick={() => !isRenaming && selectConversation(c.id)}
+                  onClick={() => {
+                    if (!isRenaming) {
+                      selectConversation(c.id)
+                      setSidebarOpen(false)
+                    }
+                  }}
                   className="group relative p-[11px_12px] rounded-[9px] cursor-pointer hover:bg-cardHover"
                   style={{ background: isActive ? '#161c27' : 'transparent' }}
                 >
@@ -220,8 +245,19 @@ export default function Chat() {
 
         {/* Chat panel */}
         <div className="flex-1 min-w-0 min-h-0 flex flex-col">
-          <div className="flex items-center justify-between p-[18px_26px] border-b border-borderSubtle">
-            <div>
+          <div className="flex items-start sm:items-center justify-between gap-3 p-4 md:p-[18px_26px] border-b border-borderSubtle">
+            <div className="flex items-start gap-3 min-w-0 flex-1">
+              <button
+                type="button"
+                onClick={() => setSidebarOpen(true)}
+                className="md:hidden flex-none flex items-center justify-center w-9 h-9 rounded-[9px] border border-borderInput text-[#aab2c2] hover:text-white"
+                aria-label="Open chat list"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M2 4h12M2 8h12M2 12h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+              </button>
+              <div className="min-w-0">
               <div className="text-white text-[17px] font-bold">{active?.title ?? 'New Chat'}</div>
               <div className="flex items-center gap-2 mt-[3px]">
                 <span className="w-[7px] h-[7px] rounded-full bg-[#2bb673]" />
@@ -289,10 +325,11 @@ export default function Chat() {
                   )}
                 </div>
               )}
+              </div>
             </div>
             <div
               onClick={() => setPanelOpen(!panelOpen)}
-              className="flex items-center gap-2 text-[13.5px] font-semibold px-[14px] py-2 rounded-[9px] cursor-pointer border"
+              className="flex-none flex items-center gap-2 text-[13.5px] font-semibold px-3 md:px-[14px] py-2 rounded-[9px] cursor-pointer border"
               style={{
                 background: panelOpen ? 'rgba(91,141,255,.16)' : 'transparent',
                 color: panelOpen ? '#7aa5ff' : '#9aa3b5',
@@ -306,7 +343,7 @@ export default function Chat() {
             </div>
           </div>
 
-          <div className="flex-1 min-h-0 overflow-y-auto p-[24px_26px] flex flex-col gap-5">
+          <div className="flex-1 min-h-0 overflow-y-auto p-4 md:p-[24px_26px] flex flex-col gap-5">
             {active && active.messages.length === 0 && (
               <div className="flex-1 flex flex-col items-center justify-center text-center gap-2 text-textMuted">
                 <div className="text-textTertiary text-base font-semibold">Start the conversation</div>
@@ -320,7 +357,7 @@ export default function Chat() {
               m.role === 'user' ? (
                 <div key={m.id} className="flex flex-col items-end">
                   <div
-                    className="max-w-[78%] text-white text-[14.5px] font-medium leading-[1.55] p-[14px_17px] rounded-[14px_14px_4px_14px]"
+                    className="max-w-[92%] sm:max-w-[78%] text-white text-[14.5px] font-medium leading-[1.55] p-[14px_17px] rounded-[14px_14px_4px_14px]"
                     style={{ background: 'linear-gradient(90deg,#174dcc,#3770f0)' }}
                   >
                     {m.text}
@@ -328,7 +365,7 @@ export default function Chat() {
                 </div>
               ) : (
                 <div key={m.id} className="flex flex-col items-start">
-                  <div className="max-w-[78%] bg-card border border-[rgba(255,255,255,.07)] text-[#d6dbe6] text-[14.5px] font-medium leading-[1.55] p-[14px_17px] rounded-[14px_14px_14px_4px]">
+                  <div className="max-w-[92%] sm:max-w-[78%] bg-card border border-[rgba(255,255,255,.07)] text-[#d6dbe6] text-[14.5px] font-medium leading-[1.55] p-[14px_17px] rounded-[14px_14px_14px_4px]">
                     {m.text}
                   </div>
                   <div className="flex items-center gap-[9px] mt-2 pl-[2px]">
@@ -339,7 +376,7 @@ export default function Chat() {
                     {m.cost != null && <span className="text-textDim text-xs font-medium">{fmtMoney(m.cost)}</span>}
                   </div>
                   {m.usage && (
-                    <div className="w-[78%] mt-3 bg-card border border-[rgba(255,255,255,.07)] rounded-xl p-[15px_17px]">
+                    <div className="w-full sm:w-[78%] mt-3 bg-card border border-[rgba(255,255,255,.07)] rounded-xl p-[15px_17px]">
                       <div className="flex items-center justify-between mb-[13px]">
                         <span className="text-textSecondary text-sm font-bold">Usage &amp; Savings</span>
                         <svg width="62" height="22" viewBox="0 0 62 22" fill="none">
@@ -392,7 +429,7 @@ export default function Chat() {
           </div>
 
           {/* Smart Composer */}
-          <div className="p-[16px_26px_22px] border-t border-borderSubtle">
+          <div className="p-4 md:p-[16px_26px_22px] border-t border-borderSubtle">
             <div className="bg-card border border-[rgba(91,141,255,.28)] rounded-2xl p-[14px_16px] shadow-composer">
               <div className="flex items-center gap-2 flex-wrap mb-3">
                 <span className="text-textDim text-xs font-semibold">Will apply:</span>
@@ -425,8 +462,8 @@ export default function Chat() {
                 placeholder="Ask anything — TokenStream picks the cheapest model that can do the job…"
                 className="w-full resize-none bg-transparent border-none outline-none text-textSecondary text-[15px] leading-[1.5] p-[2px_0]"
               />
-              <div className="flex items-center justify-between mt-3 gap-4 flex-wrap">
-                <div className="flex items-center gap-[18px]">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-3 gap-4">
+                <div className="flex flex-col sm:flex-row sm:flex-wrap items-start gap-3 sm:gap-[18px] w-full sm:w-auto">
                   <div>
                     <div className="text-textMuted text-[11.5px] font-semibold uppercase tracking-[0.4px]">Est. cost</div>
                     <div className="flex items-baseline gap-2">
@@ -473,20 +510,20 @@ export default function Chat() {
                     )}
                   </div>
                 </div>
-                <div className="flex items-center gap-[10px]">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-[10px] w-full sm:w-auto">
                   <button
                     onClick={() => {
                       if (!active || !text.trim()) return
                       sendMessage(active.id, text.trim(), { compress: false, route: false, cache: false })
                       setText('')
                     }}
-                    className="text-[#aab2c2] text-sm font-semibold p-[11px_16px] rounded-[10px] border border-borderInput cursor-pointer"
+                    className="text-[#aab2c2] text-sm font-semibold p-[11px_16px] rounded-[10px] border border-borderInput cursor-pointer text-center"
                   >
                     Send as-is
                   </button>
                   <button
                     onClick={send}
-                    className="flex items-center gap-[9px] bg-primary-gradient text-white text-[14.5px] font-bold p-[11px_20px] rounded-[10px] cursor-pointer"
+                    className="flex items-center justify-center gap-[9px] bg-primary-gradient text-white text-[14.5px] font-bold p-[11px_20px] rounded-[10px] cursor-pointer"
                   >
                     Send with optimization
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -501,7 +538,13 @@ export default function Chat() {
 
         {/* Optimization Breakdown panel */}
         {panelOpen && (
-          <div className="flex-none w-[320px] border-l border-borderSubtle flex flex-col min-h-0 bg-[#0e131c]">
+          <>
+            <div
+              className="md:hidden fixed inset-0 z-40 bg-black/50"
+              onClick={() => setPanelOpen(false)}
+              aria-hidden
+            />
+            <div className="fixed md:static inset-y-0 right-0 z-50 md:z-auto flex-none w-full sm:w-[min(360px,100vw)] md:w-[320px] border-l border-borderSubtle flex flex-col min-h-0 bg-[#0e131c] shadow-shell md:shadow-none">
             <div className="flex items-center justify-between p-[18px_22px] border-b border-borderSubtle">
               <span className="text-white text-[15.5px] font-bold">Optimization Breakdown</span>
               <div
@@ -574,6 +617,7 @@ export default function Chat() {
               <div className="text-center bg-primary-gradient text-white text-[13.5px] font-bold p-[10px] rounded-lg cursor-pointer">Add to ROI tracking</div>
             </div>
           </div>
+          </>
         )}
       </div>
     </Shell>

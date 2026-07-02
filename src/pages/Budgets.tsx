@@ -90,17 +90,17 @@ export default function Budgets() {
 
   return (
     <Shell>
-      <div className="px-[30px] py-[26px] pb-[30px]">
-        <div className="flex items-start justify-between mb-[22px]">
+      <div className="px-4 md:px-[30px] py-5 md:py-[26px] pb-6 md:pb-[30px]">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-5 md:mb-[22px]">
           <div>
-            <div className="text-white text-[28px] font-extrabold tracking-[-0.5px]">
+            <div className="text-white text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]">
               Budget Management
             </div>
             <div className="text-textMuted text-[15px] font-medium mt-[5px]">
               Set multiple budgets, forecast spend, and configure smart alerts.
             </div>
           </div>
-          <div className="flex items-center gap-[10px]">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-[10px] flex-wrap">
             <div className="flex items-center gap-2 text-[#aab2c2] text-sm font-semibold px-[15px] py-[9px] rounded-[9px] border border-borderInput cursor-pointer">
               April 2026
               <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
@@ -186,7 +186,7 @@ export default function Budgets() {
           </div>
         )}
 
-        <div className="grid grid-cols-[1fr_1fr_1.15fr] gap-[18px] mb-[18px]">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[1fr_1fr_1.15fr] gap-[18px] mb-[18px]">
           {budgets.slice(0, 3).map((b) => {
             const cs = categoryStyle[b.category]
             const u = usageOf(b)
@@ -239,7 +239,7 @@ export default function Budgets() {
             )
           })}
 
-          <div className="col-start-3 row-start-1 row-span-2 bg-card border border-borderCard rounded-[14px] p-[20px_22px] flex flex-col">
+          <div className="md:col-span-2 xl:col-start-3 xl:col-span-1 xl:row-start-1 xl:row-span-2 bg-card border border-borderCard rounded-[14px] p-5 md:p-[20px_22px] flex flex-col">
             <div className="flex items-center justify-between mb-2">
               <span className="text-textSecondary text-[16.5px] font-bold">Budget History</span>
             </div>
@@ -279,7 +279,7 @@ export default function Budgets() {
             </svg>
           </div>
 
-          <div className="col-start-2 row-start-2 bg-card border border-borderCard rounded-[14px] p-[20px_22px]">
+          <div className="md:col-span-2 xl:col-start-2 xl:col-span-1 xl:row-start-2 bg-card border border-borderCard rounded-[14px] p-5 md:p-[20px_22px]">
             <div className="flex items-center justify-between mb-[14px]">
               <span className="text-textSecondary text-[16.5px] font-bold">Forecasting</span>
               <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
@@ -303,7 +303,7 @@ export default function Budgets() {
         </div>
 
         {budgets.length > 3 && (
-          <div className="grid grid-cols-3 gap-[18px] mb-[18px]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[18px] mb-[18px]">
             {budgets.slice(3).map((b) => {
               const cs = categoryStyle[b.category]
               const pct = Math.round((b.spent / b.limit) * 100)
@@ -348,8 +348,8 @@ export default function Budgets() {
         )}
 
         <div className="bg-card border border-borderCard rounded-[14px] p-[22px_24px]">
-          <div className="flex items-start justify-between gap-8 flex-wrap">
-            <div className="flex-1 min-w-[340px]">
+          <div className="flex flex-col lg:flex-row items-start justify-between gap-8">
+            <div className="flex-1 min-w-0 w-full lg:min-w-[340px]">
               <div className="text-textSecondary text-[16.5px] font-bold mb-1">Alert Threshold</div>
               <div className="text-textMuted text-[13.5px] font-medium mb-[22px]">
                 Notify me when usage reaches{' '}
@@ -390,9 +390,9 @@ export default function Budgets() {
               </div>
             </div>
 
-            <div className="w-px self-stretch bg-[rgba(255,255,255,.07)]" />
+            <div className="hidden lg:block w-px self-stretch bg-[rgba(255,255,255,.07)]" />
 
-            <div className="flex-1 min-w-[260px]">
+            <div className="flex-1 min-w-0 w-full lg:min-w-[260px]">
               <div className="text-textSecondary text-[16.5px] font-bold mb-1">Alert Channels</div>
               <div className="text-textMuted text-[13.5px] font-medium mb-[22px]">
                 Where should we send budget alerts? In-App fires in the notification bell now; email &amp; Slack

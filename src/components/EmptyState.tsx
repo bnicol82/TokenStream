@@ -18,11 +18,11 @@ export default function EmptyState({
   onSecondary?: () => void
 }) {
   return (
-    <div className="bg-card border border-borderCard rounded-[16px] p-[40px_28px] text-center flex flex-col items-center">
+    <div className="bg-card border border-borderCard rounded-[16px] p-6 md:p-[40px_28px] text-center flex flex-col items-center">
       <div className="text-[40px] mb-3">{emoji}</div>
       <div className="text-white text-[19px] font-extrabold tracking-[-0.3px] mb-[6px]">{title}</div>
       <div className="text-textMuted text-[14px] font-medium leading-[1.55] max-w-[420px] mb-5">{body}</div>
-      <div className="flex items-center gap-[10px]">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-[10px] w-full sm:w-auto">
         {ctaLabel && onCta && (
           <button
             onClick={onCta}

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Shell from '../components/Shell'
-import { SegmentBar, Tag, CheckIcon } from '../components/ui'
+import { SegmentBar, Tag, CheckIcon, ScrollTable } from '../components/ui'
 import FreeModelsBanner from '../components/FreeModelsBanner'
 import EmptyState from '../components/EmptyState'
 import { useApp } from '../lib/app-context'
@@ -52,10 +52,10 @@ export default function Overview() {
 
   return (
     <Shell>
-      <div className="px-[30px] py-[26px] pb-[30px]">
-        <div className="flex items-start justify-between mb-[22px]">
+      <div className="px-4 md:px-[30px] py-5 md:py-[26px] pb-6 md:pb-[30px]">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-5 md:mb-[22px]">
           <div>
-            <div className="text-white text-[28px] font-extrabold tracking-[-0.5px]">
+            <div className="text-white text-2xl md:text-[28px] font-extrabold tracking-[-0.5px]">
               Overview
             </div>
             <div className="text-textMuted text-[15px] font-medium mt-[5px]">
@@ -73,7 +73,7 @@ export default function Overview() {
         {topAlert && (
           <div
             onClick={() => navigate(topAlert.kind === 'project' ? '/projects' : '/budgets')}
-            className="flex items-center justify-between gap-4 rounded-[14px] p-[16px_20px] mb-5 cursor-pointer"
+            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-[14px] p-4 md:p-[16px_20px] mb-5 cursor-pointer"
             style={{
               background: topAlert.severity === 'over' ? 'linear-gradient(120deg,#2a1414,#1a0f12)' : 'linear-gradient(120deg,#2a2014,#1a140e)',
               border: `1px solid ${topAlert.severity === 'over' ? 'rgba(240,89,60,.4)' : 'rgba(240,168,120,.4)'}`,
@@ -118,19 +118,19 @@ export default function Overview() {
           />
         ) : (
         <>
-        <div className="grid grid-cols-[1.95fr_1fr] gap-5 mb-5">
-          <div className="bg-card border border-borderCard rounded-2xl p-[26px_30px]">
-            <div className="text-textTertiary text-xl font-semibold mb-[14px]">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.95fr_1fr] gap-5 mb-5">
+          <div className="bg-card border border-borderCard rounded-2xl p-5 md:p-[26px_30px]">
+            <div className="text-textTertiary text-lg md:text-xl font-semibold mb-[14px]">
               Current Monthly Spend
             </div>
-            <div className="flex items-baseline justify-between flex-wrap gap-3">
-              <div className="flex items-baseline gap-[14px]">
-                <span className="text-white text-[62px] font-extrabold tracking-[-2px] leading-none">
+            <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3">
+              <div className="flex flex-wrap items-baseline gap-3 md:gap-[14px]">
+                <span className="text-white text-[44px] md:text-[62px] font-extrabold tracking-[-2px] leading-none">
                   ${Math.round(spend).toLocaleString()}
                 </span>
-                <span className="text-textMuted text-xl font-medium">/ {usedTokens.toLocaleString()} tokens used</span>
+                <span className="text-textMuted text-base md:text-xl font-medium">/ {usedTokens.toLocaleString()} tokens used</span>
               </div>
-              <span className="text-textSecondary text-[34px] font-bold tracking-[-1px]">
+              <span className="text-textSecondary text-2xl md:text-[34px] font-bold tracking-[-1px]">
                 ${budgetCap.toLocaleString()}
               </span>
             </div>
@@ -146,20 +146,20 @@ export default function Overview() {
             </div>
           </div>
 
-          <div className="bg-card border border-borderCard rounded-2xl p-[26px_28px] flex flex-col justify-between">
-            <div className="text-textTertiary text-xl font-semibold leading-[1.3]">
+          <div className="bg-card border border-borderCard rounded-2xl p-5 md:p-[26px_28px] flex flex-col justify-between">
+            <div className="text-textTertiary text-lg md:text-xl font-semibold leading-[1.3]">
               Auto-Optimizations
               <br />
               Applied This Month
             </div>
             <div className="mt-5">
-              <span className="text-white text-[38px] font-extrabold tracking-[-1px]">Saved {savedPctVal}%</span>
-              <span className="text-accentGreen text-[38px] font-extrabold tracking-[-1px]"> ({fmtMoney(saved)})</span>
+              <span className="text-white text-[30px] md:text-[38px] font-extrabold tracking-[-1px]">Saved {savedPctVal}%</span>
+              <span className="text-accentGreen text-[30px] md:text-[38px] font-extrabold tracking-[-1px]"> ({fmtMoney(saved)})</span>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-[1fr_2.55fr] gap-5 items-stretch">
+        <div className="grid grid-cols-1 xl:grid-cols-[1fr_2.55fr] gap-5 items-stretch">
           <div className="flex flex-col gap-5">
             <div className="bg-card border border-borderCard rounded-2xl p-[22px_24px]">
               <div className="text-[#c9cfdb] text-[18px] font-semibold leading-[1.35] mb-[14px]">
@@ -206,14 +206,15 @@ export default function Overview() {
             </div>
           </div>
 
-          <div className="bg-card border border-borderCard rounded-2xl p-[24px_28px]">
-            <div className="flex items-center justify-between mb-[6px]">
-              <span className="text-white text-[22px] font-bold">Recent Activity</span>
+          <div className="bg-card border border-borderCard rounded-2xl p-5 md:p-[24px_28px]">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-[6px]">
+              <span className="text-white text-xl md:text-[22px] font-bold">Recent Activity</span>
               <div className="bg-navActive text-[#aab2c2] text-[14.5px] font-semibold px-[18px] py-[9px] rounded-[9px] border border-borderCard cursor-pointer">
                 Last 24 hours
               </div>
             </div>
 
+            <ScrollTable minWidth={720}>
             <div className="grid grid-cols-[1.3fr_1.2fr_1.1fr_.9fr_.9fr_.9fr] gap-2 py-[14px] pb-3 border-b border-[rgba(255,255,255,.07)]">
               <span className="text-textMuted text-[15px] font-semibold">Timestamp</span>
               <span className="text-textMuted text-[15px] font-semibold">Model</span>
@@ -245,7 +246,9 @@ export default function Overview() {
               </div>
             ))}
 
-            <div className="grid grid-cols-2 gap-6 mt-[22px] pt-[22px] border-t border-[rgba(255,255,255,.07)]">
+            </ScrollTable>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-[22px] pt-[22px] border-t border-[rgba(255,255,255,.07)]">
               <div>
                 <div className="text-textSecondary text-[17px] font-bold mb-[6px]">ROI Attribution</div>
                 <div className="text-textMuted text-[15px] font-medium leading-[1.5]">

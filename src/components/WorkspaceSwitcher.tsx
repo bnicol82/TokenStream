@@ -93,7 +93,7 @@ export default function WorkspaceSwitcher() {
       {open && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => { setOpen(false); reset() }} />
-          <div className="absolute left-0 mt-2 w-[260px] z-50 bg-card border border-borderCard rounded-[12px] shadow-shell overflow-hidden">
+          <div className="absolute right-0 left-auto mt-2 w-[min(260px,calc(100vw-2rem))] z-50 bg-card border border-borderCard rounded-[12px] shadow-shell overflow-hidden">
             <div className="px-[14px] py-[10px] text-textMuted text-[11px] font-bold uppercase tracking-[0.5px] border-b border-borderSubtle">
               Workspaces
             </div>
