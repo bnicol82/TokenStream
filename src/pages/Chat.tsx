@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Shell from '../components/Shell'
 import { useApp } from '../lib/app-context'
 import {
@@ -46,6 +46,16 @@ export default function Chat() {
   const [renameDraft, setRenameDraft] = useState('')
 
   const catalog = useMemo(() => combinedModels(customModels), [customModels])
+
+  // Keep the newest message in view — without this, sent messages land below
+  // the fold and look like they were never added (especially on phones).
+  const messagesRef = useRef<HTMLDivElement>(null)
+  const messageCount = active?.messages.length ?? 0
+  const lastMessageText = active?.messages[active.messages.length - 1]?.text ?? ''
+  useEffect(() => {
+    const el = messagesRef.current
+    if (el) el.scrollTop = el.scrollHeight
+  }, [messageCount, lastMessageText, activeConversationId])
   // The model the active conversation is pinned to (null/undefined = Auto).
   const pinnedName = active?.modelName ?? null
   const pinned = pinnedName ? catalog.find((m) => m.name === pinnedName) : null
@@ -329,7 +339,7 @@ export default function Chat() {
             </div>
           </div>
 
-          <div className="flex-1 min-h-0 overflow-y-auto p-[24px_26px] flex flex-col gap-5 max-md:p-[16px_14px]">
+          <div ref={messagesRef} className="flex-1 min-h-0 overflow-y-auto p-[24px_26px] flex flex-col gap-5 max-md:p-[16px_14px]">
             {active && active.messages.length === 0 && (
               <div className="flex-1 flex flex-col items-center justify-center text-center gap-2 text-textMuted">
                 <div className="text-textTertiary text-base font-semibold">Start the conversation</div>
