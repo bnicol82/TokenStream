@@ -20,11 +20,11 @@ export default function TopNav() {
 
   return (
     <div className="flex items-center px-[30px] py-[22px] border-b border-borderSubtle max-md:px-4 max-md:py-[14px]">
-      {/* Hamburger — replaces the inline nav on narrow screens */}
+      {/* Hamburger — tablet widths only (phones use the bottom tab bar) */}
       <button
         onClick={() => setMenuOpen(true)}
         aria-label="Open menu"
-        className="hidden max-xl:flex w-[38px] h-[38px] mr-3 rounded-[9px] border border-borderInput items-center justify-center cursor-pointer hover:border-white/20"
+        className="hidden max-xl:flex max-md:hidden w-[38px] h-[38px] mr-3 rounded-[9px] border border-borderInput items-center justify-center cursor-pointer hover:border-white/20"
       >
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
           <path d="M2 4.5h14M2 9h14M2 13.5h14" stroke="#c4cad6" strokeWidth="1.7" strokeLinecap="round" />

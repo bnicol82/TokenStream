@@ -16,11 +16,11 @@ const ruleDefs = [
 
 function Segs({ n, color }: { n: number; color: string }) {
   return (
-    <div className="flex gap-[3px]">
+    <div className="flex gap-[3px] max-md:gap-[2px]">
       {Array.from({ length: 5 }).map((_, i) => (
         <div
           key={i}
-          className="w-[11px] h-[7px] rounded-[2px]"
+          className="w-[11px] h-[7px] rounded-[2px] max-md:w-[8px]"
           style={{ background: i < n ? color : '#222a38' }}
         />
       ))}
@@ -244,8 +244,8 @@ export default function Optimization() {
             </div>
           </div>
 
-          <div className="bg-card border border-borderCard rounded-[14px] p-[20px_22px]">
-            <div className="flex items-center justify-between mb-4">
+          <div className="bg-card border border-borderCard rounded-[14px] p-[20px_22px] max-md:p-[16px_14px]">
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
               <div className="text-textSecondary text-[16.5px] font-bold">
                 Model Performance Matrix
               </div>
@@ -319,9 +319,7 @@ export default function Optimization() {
               </div>
             )}
 
-            <div className="max-md:overflow-x-auto">
-            <div className="max-md:min-w-[440px]">
-            <div className="grid grid-cols-[1.4fr_1fr_1fr_1fr_auto] gap-2 pb-3 border-b border-[rgba(255,255,255,.07)]">
+            <div className="grid grid-cols-[1.4fr_1fr_1fr_1fr_auto] gap-2 max-md:gap-1 pb-3 border-b border-[rgba(255,255,255,.07)]">
               <span className="text-textMuted text-[13px] font-semibold">Model</span>
               <span className="text-textMuted text-[13px] font-semibold">Speed</span>
               <span className="text-textMuted text-[13px] font-semibold">Cost</span>
@@ -333,7 +331,7 @@ export default function Optimization() {
               return (
                 <div
                   key={isCustom ? (m.id ?? m.name) : m.name}
-                  className="grid grid-cols-[1.4fr_1fr_1fr_1fr_auto] gap-2 items-center py-[13px] border-b border-[rgba(255,255,255,.04)]"
+                  className="grid grid-cols-[1.4fr_1fr_1fr_1fr_auto] gap-2 max-md:gap-1 items-center py-[13px] border-b border-[rgba(255,255,255,.04)]"
                 >
                   <span className="text-[#d6dbe6] text-sm font-semibold flex items-center flex-wrap gap-x-[6px]">
                     {m.name}
@@ -360,8 +358,6 @@ export default function Optimization() {
                 </div>
               )
             })}
-            </div>
-            </div>
             <div className="flex gap-4 mt-[14px]">
               <div className="flex items-center gap-[6px]">
                 <span className="w-[9px] h-[9px] rounded-[2px] bg-[#5b8dff]" />

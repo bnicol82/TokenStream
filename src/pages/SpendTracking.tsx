@@ -326,7 +326,7 @@ export default function SpendTracking() {
                   Tokens
                 </div>
               </div>
-              <svg width="100%" height="186" viewBox="0 0 520 186" fill="none" preserveAspectRatio="none">
+              <svg viewBox="0 0 520 186" fill="none" className="w-full h-auto">
                 <defs>
                   <linearGradient id="st-area" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0" stopColor="#5b8dff" stopOpacity=".34" />
@@ -360,7 +360,7 @@ export default function SpendTracking() {
                   ))}
                 </div>
               </div>
-              <svg width="100%" height="186" viewBox="0 0 520 186" fill="none" preserveAspectRatio="none">
+              <svg viewBox="0 0 520 186" fill="none" className="w-full h-auto">
                 {[0, 39, 78, 117, 156].map((y, i) => (
                   <line key={i} x1="44" y1={y + 14} x2="512" y2={y + 14} stroke="rgba(255,255,255,.06)" strokeWidth="1" />
                 ))}
@@ -401,17 +401,55 @@ export default function SpendTracking() {
               </div>
             </div>
 
-            <div className="max-lg:overflow-x-auto">
+            {filtered.length === 0 && (
+              <div className="text-textMuted text-sm text-center py-10">No transactions match your filters.</div>
+            )}
+
+            {/* Phone layout: one card per transaction (no sideways scrolling) */}
+            <div className="md:hidden">
+              {filtered.map((t) => {
+                const sav = t.optimized && t.baseCost > 0 ? Math.round((1 - t.cost / t.baseCost) * 100) + '%' : null
+                const proj = projectName(t.projectId)
+                return (
+                  <div key={t.id} className="flex items-start justify-between gap-3 py-[12px] border-b border-[rgba(255,255,255,.05)]">
+                    <div className="min-w-0">
+                      <div className="text-[#d6dbe6] text-[15px] font-semibold truncate">{t.model}</div>
+                      <div className="text-textMuted text-[12.5px] font-medium mt-[2px]">
+                        {fmtDate(t.ts)} · {t.provider}
+                      </div>
+                      <div className="flex items-center gap-[6px] mt-[7px] flex-wrap">
+                        <span className="bg-[#1d2532] text-[#bcc4d2] text-[11.5px] font-semibold px-[7px] py-[2px] rounded-[6px]">{t.tag}</span>
+                        {proj && (
+                          <span className="inline-flex items-center gap-[5px] text-[#bcc4d2] text-[11.5px] font-medium">
+                            <span className="w-[7px] h-[7px] rounded-[2px] flex-none" style={{ background: proj.color }} />
+                            {proj.name}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-right flex-none">
+                      <div className="text-white text-[15px] font-bold">{fmtMoney(t.cost)}</div>
+                      <div className="text-textMuted text-[12px] font-medium mt-[2px]">
+                        {(t.inputTokens + t.outputTokens).toLocaleString()} tok
+                      </div>
+                      {sav ? (
+                        <div className="text-accentGreen text-[12px] font-bold mt-[2px]">saved {sav}</div>
+                      ) : (
+                        <div className="text-textDim text-[12px] font-medium mt-[2px]">not optimized</div>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+
+            <div className="max-lg:overflow-x-auto max-md:hidden">
             <div className="max-lg:min-w-[900px]">
             <div className={`${txGrid} pb-3 px-[6px] border-b border-[rgba(255,255,255,.07)]`}>
               {['Date', 'Provider', 'Model', 'Task Tag', 'Project', 'Input', 'Output', 'Cost', 'Optimized', 'Savings'].map((h) => (
                 <span key={h} className="text-textMuted text-[13.5px] font-semibold">{h}</span>
               ))}
             </div>
-
-            {filtered.length === 0 && (
-              <div className="text-textMuted text-sm text-center py-10">No transactions match your filters.</div>
-            )}
 
             {filtered.map((t) => {
               const sav = t.optimized && t.baseCost > 0 ? Math.round((1 - t.cost / t.baseCost) * 100) + '%' : '—'

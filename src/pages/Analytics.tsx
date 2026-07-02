@@ -166,7 +166,7 @@ export default function Analytics() {
               Token Consumption by Task Category over Time
             </div>
             <div className="flex gap-[18px] max-md:flex-col">
-              <svg width="100%" height="210" viewBox="0 0 520 210" fill="none" preserveAspectRatio="none" className="flex-1">
+              <svg viewBox="0 0 520 210" fill="none" className="flex-1 w-full h-auto min-w-0">
                 {areaGrid.map((g, i) => (
                   <g key={i}>
                     <line x1="44" y1={g.y} x2="512" y2={g.y} stroke="rgba(255,255,255,.06)" strokeWidth="1" />
@@ -243,12 +243,16 @@ export default function Analytics() {
             <div className="text-textSecondary text-[16.5px] font-bold mb-[14px]">
               Highest ROI Activities
             </div>
-            <div className="max-md:overflow-x-auto">
-            <div className="max-md:min-w-[460px]">
             <div className="grid grid-cols-[1.4fr_1fr_1.2fr_.7fr] gap-2 pb-3 border-b border-[rgba(255,255,255,.07)]">
               <span className="text-textMuted text-[13.5px] font-semibold">Task Tag</span>
-              <span className="text-textMuted text-[13.5px] font-semibold">Tokens Used</span>
-              <span className="text-textMuted text-[13.5px] font-semibold">Est. Business Value</span>
+              <span className="text-textMuted text-[13.5px] font-semibold">
+                <span className="max-md:hidden">Tokens Used</span>
+                <span className="md:hidden">Tokens</span>
+              </span>
+              <span className="text-textMuted text-[13.5px] font-semibold">
+                <span className="max-md:hidden">Est. Business Value</span>
+                <span className="md:hidden">Value</span>
+              </span>
               <span className="text-textMuted text-[13.5px] font-semibold text-right">ROI</span>
             </div>
             {roi.map((r) => (
@@ -266,8 +270,6 @@ export default function Analytics() {
                 </div>
               </div>
             ))}
-            </div>
-            </div>
           </div>
 
           <div className="bg-card border border-borderCard rounded-[14px] p-[20px_22px]">
@@ -298,35 +300,33 @@ export default function Analytics() {
           {projectRows.length === 0 ? (
             <div className="text-textMuted text-sm py-6 text-center">No usage yet.</div>
           ) : (
-            <div className="max-md:overflow-x-auto">
-            <div className="max-md:min-w-[520px]">
-              <div className="grid grid-cols-[1.6fr_1fr_1fr_1.4fr] gap-2 pb-3 border-b border-[rgba(255,255,255,.07)]">
+            <>
+              <div className="grid grid-cols-[1.6fr_1fr_1fr_1.4fr] gap-2 pb-3 border-b border-[rgba(255,255,255,.07)] max-md:grid-cols-[1.6fr_1fr_1fr_.7fr]">
                 <span className="text-textMuted text-[13.5px] font-semibold">Project</span>
                 <span className="text-textMuted text-[13.5px] font-semibold">Tokens</span>
                 <span className="text-textMuted text-[13.5px] font-semibold">Cost</span>
-                <span className="text-textMuted text-[13.5px] font-semibold">Share of spend</span>
+                <span className="text-textMuted text-[13.5px] font-semibold max-md:text-right">Share</span>
               </div>
               {projectRows.map((r) => (
                 <div
                   key={r.key}
-                  className="grid grid-cols-[1.6fr_1fr_1fr_1.4fr] gap-2 items-center py-[13px] border-b border-[rgba(255,255,255,.04)]"
+                  className="grid grid-cols-[1.6fr_1fr_1fr_1.4fr] gap-2 items-center py-[13px] border-b border-[rgba(255,255,255,.04)] max-md:grid-cols-[1.6fr_1fr_1fr_.7fr]"
                 >
-                  <span className="flex items-center gap-[8px] text-[#d6dbe6] text-[14.5px] font-medium">
+                  <span className="flex items-center gap-[8px] text-[#d6dbe6] text-[14.5px] font-medium min-w-0">
                     <span className="w-[10px] h-[10px] rounded-[3px] flex-none" style={{ background: r.color }} />
-                    {r.name}
+                    <span className="truncate">{r.name}</span>
                   </span>
                   <span className="text-[#aab2c2] text-[14.5px]">{fmtTokens(r.tokens)}</span>
                   <span className="text-[#d6dbe6] text-[14.5px] font-semibold">{fmtMoney(r.cost)}</span>
                   <div className="flex items-center gap-[10px]">
-                    <div className="flex-1 h-[7px] bg-[#1d2532] rounded-[99px] overflow-hidden">
+                    <div className="flex-1 h-[7px] bg-[#1d2532] rounded-[99px] overflow-hidden max-md:hidden">
                       <div className="h-full rounded-[99px]" style={{ width: `${r.pct}%`, background: r.color }} />
                     </div>
                     <span className="text-textMuted text-[13px] font-semibold w-[34px] text-right">{r.pct}%</span>
                   </div>
                 </div>
               ))}
-            </div>
-            </div>
+            </>
           )}
         </div>
       </div>

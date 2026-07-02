@@ -165,7 +165,7 @@ export default function Overview() {
               <div className="text-[#c9cfdb] text-[18px] font-semibold leading-[1.35] mb-[14px]">
                 Projected to hit budget in <span className="text-white">{daysToBudget} days</span> at current rate
               </div>
-              <svg width="100%" height="130" viewBox="0 0 280 130" fill="none" preserveAspectRatio="none">
+              <svg viewBox="0 0 280 130" fill="none" className="w-full h-auto">
                 <defs>
                   <linearGradient id="ts-area" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0" stopColor="#5b8dff" stopOpacity=".35" />
@@ -214,8 +214,29 @@ export default function Overview() {
               </div>
             </div>
 
-            <div className="max-md:overflow-x-auto">
-            <div className="max-md:min-w-[640px]">
+            {/* Phone layout: one card row per transaction (no sideways scrolling) */}
+            <div className="md:hidden mt-2">
+              {rows.map((r) => (
+                <div key={r.id} className="flex items-center justify-between gap-3 py-[12px] border-b border-[rgba(255,255,255,.05)]">
+                  <div className="min-w-0">
+                    <div className="text-[#d6dbe6] text-[15px] font-semibold truncate">{r.model}</div>
+                    <div className="flex items-center gap-[8px] mt-[3px]">
+                      <span className="text-textMuted text-[12.5px] font-medium">{r.time}</span>
+                      <span className="bg-[#1d2532] text-[#bcc4d2] text-[11.5px] font-semibold px-[7px] py-[2px] rounded-[6px]">{r.tag}</span>
+                    </div>
+                  </div>
+                  <div className="text-right flex-none">
+                    <div className="flex items-center justify-end gap-[6px]">
+                      <span className="text-white text-[15px] font-bold">{r.cost}</span>
+                      {r.optimized && <CheckIcon size={16} />}
+                    </div>
+                    <div className="text-textMuted text-[12px] font-medium mt-[2px]">{r.tokens} tok</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="max-md:hidden">
             <div className="grid grid-cols-[1.3fr_1.2fr_1.1fr_.9fr_.9fr_.9fr] gap-2 py-[14px] pb-3 border-b border-[rgba(255,255,255,.07)]">
               <span className="text-textMuted text-[15px] font-semibold">Timestamp</span>
               <span className="text-textMuted text-[15px] font-semibold">Model</span>
@@ -246,7 +267,6 @@ export default function Overview() {
                 </div>
               </div>
             ))}
-            </div>
             </div>
 
             <div className="grid grid-cols-2 gap-6 mt-[22px] pt-[22px] border-t border-[rgba(255,255,255,.07)] max-md:grid-cols-1">

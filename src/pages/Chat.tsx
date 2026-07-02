@@ -112,7 +112,7 @@ export default function Chat() {
 
   return (
     <Shell>
-      <div className="flex h-[640px] max-md:h-[calc(100dvh-67px)]">
+      <div className="flex h-[640px] max-md:h-[calc(100dvh-129px)]">
         {/* Backdrop for the mobile conversation drawer */}
         {chatsOpen && <div className="md:hidden fixed inset-0 z-[59] bg-black/60" onClick={() => setChatsOpen(false)} />}
         {/* Sidebar — inline on desktop, slide-over drawer on phones */}
@@ -245,8 +245,8 @@ export default function Chat() {
               </svg>
             </button>
             <div className="min-w-0">
-              <div className="text-white text-[17px] font-bold">{active?.title ?? 'New Chat'}</div>
-              <div className="flex items-center gap-2 mt-[3px]">
+              <div className="text-white text-[17px] font-bold truncate">{active?.title ?? 'New Chat'}</div>
+              <div className="flex items-center gap-2 mt-[3px] max-md:hidden">
                 <span className="w-[7px] h-[7px] rounded-full bg-[#2bb673]" />
                 <span className="text-textMuted text-[13px] font-medium">
                   {optimization.engineOn ? 'Auto-routing on' : 'Auto-routing off'} ·{' '}
@@ -418,7 +418,7 @@ export default function Chat() {
           <div className="p-[16px_26px_22px] border-t border-borderSubtle max-md:p-[10px_10px_14px]">
             <div className="bg-card border border-[rgba(91,141,255,.28)] rounded-2xl p-[14px_16px] shadow-composer">
               <div className="flex items-center gap-2 flex-wrap mb-3">
-                <span className="text-textDim text-xs font-semibold">Will apply:</span>
+                <span className="text-textDim text-xs font-semibold max-md:hidden">Will apply:</span>
                 {chips.map((c) => (
                   <div
                     key={c.label}
@@ -453,23 +453,23 @@ export default function Chat() {
                   <div>
                     <div className="text-textMuted text-[11.5px] font-semibold uppercase tracking-[0.4px]">Est. cost</div>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-white text-[22px] font-extrabold tracking-[-0.5px]">{fmtMoney(calc.optCost)}</span>
+                      <span className="text-white text-[22px] font-extrabold tracking-[-0.5px] max-md:text-[17px]">{fmtMoney(calc.optCost)}</span>
                       <span className="text-textDisabled text-[13px] font-medium line-through">{fmtMoney(calc.baseCost)}</span>
                       <span className="text-accentGreen text-[13px] font-bold">{calc.savingsPct}% cheaper</span>
                     </div>
                   </div>
                   <div className="w-px h-[34px] bg-[rgba(255,255,255,.08)] max-md:hidden" />
-                  <div>
+                  <div className="max-md:hidden">
                     <div className="text-textMuted text-[11.5px] font-semibold uppercase tracking-[0.4px]">Tokens</div>
                     <div className="text-textTertiary text-[15px] font-bold mt-[3px]">≈ {calc.totalTokens.toLocaleString()} tok</div>
                   </div>
-                  <div>
-                    <div className="text-textMuted text-[11.5px] font-semibold uppercase tracking-[0.4px]">Model</div>
-                    <div className="flex items-center gap-[6px] mt-[3px]">
+                  <div className="max-md:w-full">
+                    <div className="text-textMuted text-[11.5px] font-semibold uppercase tracking-[0.4px] max-md:hidden">Model</div>
+                    <div className="flex items-center gap-[6px] mt-[3px] max-md:mt-0">
                       <select
                         value={pinnedName ?? ''}
                         onChange={(e) => active && setConversationModel(active.id, e.target.value || null)}
-                        className="bg-input border border-borderInput rounded-[7px] px-[8px] py-[4px] text-textTertiary text-[13.5px] font-bold outline-none cursor-pointer focus:border-[rgba(91,141,255,.5)] max-w-[210px]"
+                        className="bg-input border border-borderInput rounded-[7px] px-[8px] py-[4px] text-textTertiary text-[13.5px] font-bold outline-none cursor-pointer focus:border-[rgba(91,141,255,.5)] max-w-[210px] max-md:max-w-none max-md:flex-1 max-md:py-[7px]"
                       >
                         <option value="">Auto — cheapest ({bestFreeModel().name} · $0.00)</option>
                         {modelEstimates.map(({ model, cost }) => (
@@ -511,7 +511,8 @@ export default function Chat() {
                     onClick={send}
                     className="flex items-center justify-center gap-[9px] bg-primary-gradient text-white text-[14.5px] font-bold p-[11px_20px] rounded-[10px] cursor-pointer max-md:flex-1"
                   >
-                    Send with optimization
+                    <span className="max-md:hidden">Send with optimization</span>
+                    <span className="md:hidden">Send optimized</span>
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                       <path d="M2 8h11M9 4l4 4-4 4" stroke="#fff" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
