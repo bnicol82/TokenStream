@@ -54,7 +54,14 @@ export default function Chat() {
   const lastMessageText = active?.messages[active.messages.length - 1]?.text ?? ''
   useEffect(() => {
     const el = messagesRef.current
-    if (el) el.scrollTop = el.scrollHeight
+    if (!el) return
+    el.scrollTop = el.scrollHeight
+    // Re-pin on the next frame in case the just-committed content (usage
+    // cards, wrapped text) settles to a different height after first layout.
+    const raf = requestAnimationFrame(() => {
+      el.scrollTop = el.scrollHeight
+    })
+    return () => cancelAnimationFrame(raf)
   }, [messageCount, lastMessageText, activeConversationId])
   // The model the active conversation is pinned to (null/undefined = Auto).
   const pinnedName = active?.modelName ?? null
